@@ -5,9 +5,46 @@ import { path } from '../../lib/site';
 
 const entries = await getCollection('journal');
 const sorted = entries.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Breadcrumb schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Journal',
+      item: 'https://66north.github.io/elsewhere/journal',
+    },
+  ],
+};
+
+// CollectionPage schema
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Journal – Trip Reports',
+  description: 'Trip reports and expedition logs from the road with the Mitsubishi Pajero.',
+  hasPart: sorted.slice(0, 5).map(entry => ({
+    '@type': 'BlogPosting',
+    headline: entry.data.title,
+    description: entry.data.preview,
+    datePublished: entry.data.date,
+    url: `https://66north.github.io/elsewhere/journal/${entry.data.slug}`,
+  })),
+};
 ---
 
 <BaseLayout section="journal" title="Journal" description="Trip reports from the road.">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <div class="journal-page">
     <header class="journal-header">
       <span class="eyebrow">Journal</span>

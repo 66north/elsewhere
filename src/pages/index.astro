@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getDifficultyLabel } from '../lib/guide';
-import { path } from '../lib/site';
+import { path, site } from '../lib/site';
 
 // Get some featured guides (maintenance + troubleshooting mix)
 const guides = await getCollection('guides');
@@ -10,9 +10,39 @@ const featured = guides
   .filter(g => ['maintenance', 'troubleshoot'].includes(g.data.category || ''))
   .sort(() => Math.random() - 0.5)
   .slice(0, 4);
+
+// Structured data schemas
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: 'https://66north.github.io/elsewhere',
+  description: site.description,
+  author: {
+    '@type': 'Person',
+    name: site.author,
+  },
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: 'https://66north.github.io/elsewhere',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://66north.github.io/elsewhere?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
 ---
 
 <BaseLayout section="home">
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <section class="hero container">
     <div class="hero-grid">
       <div class="hero-copy">

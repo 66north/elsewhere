@@ -47,9 +47,49 @@ const totalGuides = guides.length;
 const avgTime = Math.round(
   guides.reduce((sum, g) => sum + (g.data.time_minutes || 0), 0) / guides.length
 );
+
+// Breadcrumb schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Workshop',
+      item: 'https://66north.github.io/elsewhere/workshop',
+    },
+  ],
+};
+
+// CollectionPage schema
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Workshop – Repair Guides',
+  description: 'Comprehensive repair guides for Mitsubishi Pajero covering maintenance, troubleshooting, and modifications.',
+  mainEntity: {
+    '@type': 'Collection',
+    name: 'Pajero Repair Guides',
+    hasPart: guides.slice(0, 10).map(g => ({
+      '@type': 'HowTo',
+      name: g.data.title,
+      description: g.data.description || '',
+      url: `https://66north.github.io/elsewhere/workshop/guides/${g.data.slug}`,
+    })),
+  },
+};
 ---
 
 <BaseLayout section="workshop" title="Workshop" description="Repair guides, fault codes, parts, and the factory service manual archive.">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
   <div class="workshop-hub">
     <!-- Hero section -->
     <section class="hero">

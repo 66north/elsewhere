@@ -31,9 +31,52 @@ const sorted = allEntries.sort((a, b) => new Date(b.data.date).getTime() - new D
 const currentIndex = sorted.findIndex((e) => e.data.slug === slug);
 const previousEntry = currentIndex > 0 ? sorted[currentIndex - 1] : null;
 const nextEntry = currentIndex < sorted.length - 1 ? sorted[currentIndex + 1] : null;
+
+// BreadcrumbList schema
+const fullEntryUrl = `https://66north.github.io/elsewhere/journal/${slug}`;
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Journal',
+      item: 'https://66north.github.io/elsewhere/journal',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: title,
+      item: fullEntryUrl,
+    },
+  ],
+};
+
+// BlogPosting schema
+const blogPostingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: entry.data.preview,
+  datePublished: date,
+  image: entry.data.image || 'https://66north.github.io/elsewhere/assets/pajero-build-reference.png',
+  author: {
+    '@type': 'Person',
+    name: 'RD',
+  },
+};
 ---
 
 <BaseLayout title={title} description={entry.data.preview} section="journal">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
   <article class="journal-post">
     <header class="post-header">
       <a href={path('/journal')} class="back-link">← Journal</a>

@@ -37,7 +37,40 @@ const Content = module.default;
 
 // Generate schema for JSON-LD
 const guideUrl = path(`/workshop/guides/${slug}`);
+const fullGuideUrl = `https://66north.github.io${guideUrl}`;
 const howToSchema = generateHowToSchema(entry.data, guideUrl);
+
+// BreadcrumbList schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Workshop',
+      item: 'https://66north.github.io/elsewhere/workshop',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'Guides',
+      item: 'https://66north.github.io/elsewhere/workshop/guides',
+    },
+    {
+      '@type': 'ListItem',
+      position: 4,
+      name: title,
+      item: fullGuideUrl,
+    },
+  ],
+};
 
 // Get related guides (TODO: fetch actual titles)
 const relatedGuides = await getRelatedGuides(related);
@@ -49,6 +82,7 @@ let headings: any[] = [];
 
 <BaseLayout title={title} description={`${title} for Mitsubishi Pajero`} section="workshop">
   <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 
   <div class="guide-layout">
     <!-- Left sidebar: Table of Contents -->

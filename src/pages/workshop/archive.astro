@@ -1,0 +1,436 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { path } from '../../lib/site';
+
+// Breadcrumb schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Workshop',
+      item: 'https://66north.github.io/elsewhere/workshop',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'Service Manual Archive',
+      item: 'https://66north.github.io/elsewhere/workshop/archive',
+    },
+  ],
+};
+
+// CreativeWork schema for the manual
+const manualSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: 'Mitsubishi Pajero (NS) Factory Service Manual',
+  description: 'Searchable factory service manual for Mitsubishi Pajero (2006–2015). Complete digitized archive with 19,617 pages indexed and cross-referenced with repair guides.',
+  author: {
+    '@type': 'Organization',
+    name: 'Mitsubishi',
+  },
+  inLanguage: 'en',
+  numberOfPages: 19617,
+};
+---
+
+<BaseLayout section="workshop" title="Service Manual Archive" description="Searchable factory service manual for Mitsubishi Pajero (2006–2015).">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(manualSchema)} />
+  <div class="archive-page">
+    <header class="archive-header">
+      <span class="eyebrow">Workshop Archive</span>
+      <h1>Factory Service Manual</h1>
+      <p class="lede">
+        Complete digitized Mitsubishi Pajero service manual covering all NS-generation models (2006–2015). 19,617 pages indexed and cross-referenced with repair guides.
+      </p>
+    </header>
+
+    <!-- Manual Info -->
+    <section class="manual-info">
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>Coverage</h3>
+          <p>Pajero NS (2006–2015)</p>
+          <p class="detail">All engines: 4M40, 4M41, 6G72, 6G74, 6G75</p>
+        </div>
+        <div class="info-card">
+          <h3>Pages</h3>
+          <p>19,617</p>
+          <p class="detail">Original factory documentation</p>
+        </div>
+        <div class="info-card">
+          <h3>Language</h3>
+          <p>English</p>
+          <p class="detail">OEM service documentation</p>
+        </div>
+        <div class="info-card">
+          <h3>Format</h3>
+          <p>Digital Archive</p>
+          <p class="detail">Indexed & searchable</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Manual Chapters -->
+    <section class="chapters-section">
+      <h2>Manual Chapters</h2>
+      <div class="chapters-grid">
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">01</div>
+          <div class="chapter-content">
+            <h3>General Information</h3>
+            <p>Vehicle overview, identification numbers, specifications, maintenance schedules.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">02</div>
+          <div class="chapter-content">
+            <h3>Engine Mechanical</h3>
+            <p>Engine assembly, cylinder head, pistons, crankshaft, camshaft, valves, timing chains.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">03</div>
+          <div class="chapter-content">
+            <h3>Engine Cooling</h3>
+            <p>Radiator, water pump, thermostat, cooling fan, heater core, temperature sensors.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">04</div>
+          <div class="chapter-content">
+            <h3>Engine Fuel</h3>
+            <p>Fuel tank, fuel pump, injectors, fuel pressure regulator, fuel lines, filters.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">05</div>
+          <div class="chapter-content">
+            <h3>Engine Electrical</h3>
+            <p>Starter motor, alternator, battery, ignition system, electrical connections.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">06</div>
+          <div class="chapter-content">
+            <h3>Emission Control</h3>
+            <p>EGR system, catalytic converter, evaporative emissions, oxygen sensors.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">07</div>
+          <div class="chapter-content">
+            <h3>Transmission</h3>
+            <p>Manual transmission, transfer case, shift linkage, bearings, synchronizers.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">08</div>
+          <div class="chapter-content">
+            <h3>Driveline</h3>
+            <p>Front & rear differentials, drive shafts, CV joints, bearings, seals.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">09</div>
+          <div class="chapter-content">
+            <h3>Suspension</h3>
+            <p>Springs, shocks, control arms, stabilizer bars, steering knuckles, bushings.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">10</div>
+          <div class="chapter-content">
+            <h3>Steering</h3>
+            <p>Steering gear, tie rods, idler arm, drag link, power steering pump, hoses.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">11</div>
+          <div class="chapter-content">
+            <h3>Brake System</h3>
+            <p>Master cylinder, brake lines, calipers, pads, rotors, wheel cylinders, proportioning valve.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">12</div>
+          <div class="chapter-content">
+            <h3>Body & Chassis</h3>
+            <p>Frame, body panels, doors, windows, weatherstripping, bumpers, trim.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">13</div>
+          <div class="chapter-content">
+            <h3>Interior</h3>
+            <p>Dashboard, seats, carpeting, headliner, door panels, instrumentation.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">14</div>
+          <div class="chapter-content">
+            <h3>Heating & AC</h3>
+            <p>Heater assembly, air conditioning system, compressor, condenser, blower motor.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">15</div>
+          <div class="chapter-content">
+            <h3>Lighting</h3>
+            <p>Headlights, taillights, interior lights, switches, wiring, relays.</p>
+          </div>
+        </a>
+
+        <a href="#" class="chapter-card">
+          <div class="chapter-number">16</div>
+          <div class="chapter-content">
+            <h3>Wiring Diagrams</h3>
+            <p>Electrical schematics, connector diagrams, color codes, circuit protection.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Cross-References -->
+    <section class="cross-reference-section">
+      <h2>Integration with Workshop Guides</h2>
+      <p>
+        All 112 repair guides in the Workshop are cross-referenced with the factory service manual. Each guide cites the relevant manual section, torque specifications, and official procedures.
+      </p>
+      <div class="cta-buttons">
+        <a href={path('/workshop/guides')} class="btn btn-primary">Browse Guides</a>
+        <a href={path('/workshop')} class="btn">Back to Workshop</a>
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+      <p class="disclaimer-text">
+        <strong>Note:</strong> This archive is provided for educational and reference purposes. Always follow official manufacturer procedures and consult qualified technicians for vehicle repair. Improper service procedures can damage the vehicle or cause injury.
+      </p>
+    </section>
+  </div>
+
+  <style>
+    .archive-page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px var(--spacing-page) 40px;
+    }
+
+    .archive-header {
+      margin-bottom: 48px;
+    }
+
+    .archive-header h1 {
+      font-size: 40px;
+      margin: 12px 0 16px;
+      color: var(--fg);
+    }
+
+    .lede {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--fg-muted);
+      max-width: 70ch;
+    }
+
+    section {
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0 0 24px;
+      color: var(--fg);
+    }
+
+    /* Manual Info */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .info-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+    }
+
+    .info-card h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-soft);
+    }
+
+    .info-card p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .info-card .detail {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: normal;
+      color: var(--fg-muted);
+    }
+
+    /* Chapters */
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .chapter-card {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+      color: inherit;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .chapter-card:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+    }
+
+    .chapter-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-sunken);
+      border: 1px solid var(--border);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .chapter-content h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .chapter-content p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+    }
+
+    /* Cross-Reference Section */
+    .cross-reference-section {
+      padding: 24px;
+      background: var(--bg-sunken);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .cross-reference-section p {
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--fg-muted);
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Disclaimer */
+    .disclaimer-section {
+      padding: 16px;
+      background: var(--bg-sunken);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+    }
+
+    .disclaimer-text {
+      margin: 0;
+      font-size: 13px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+
+    .disclaimer-text strong {
+      color: var(--fg);
+    }
+
+    @media (max-width: 640px) {
+      .archive-page {
+        padding: 40px var(--spacing-page) 24px;
+      }
+
+      .archive-header h1 {
+        font-size: 32px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chapters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chapter-card {
+        grid-template-columns: 1fr;
+      }
+
+      .chapter-number {
+        width: 100%;
+        height: auto;
+        padding: 8px;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</BaseLayout>

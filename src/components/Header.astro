@@ -1,0 +1,153 @@
+---
+import { site, nav, path, type Section } from '../lib/site';
+import SearchBar from './SearchBar.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  section?: Section;
+  showVehiclePicker?: boolean;
+  showSearch?: boolean;
+}
+
+const { section = 'home', showVehiclePicker = false, showSearch = true } = Astro.props;
+---
+
+<header class="app-header">
+  <div class="header-inner">
+    <a class="app-logo" href={path('/')} aria-label={`${site.name} home`}>
+      <img
+        src={path('/assets/elsewhere-logo.png')}
+        alt=""
+        width="34"
+        height="34"
+        class="logo-mark"
+      />
+      <div class="logo-text">
+        <span class="wordmark">{site.name}</span>
+        <span class="tagline mono">{section === 'workshop' ? site.workshopSubtitle : site.tagline}</span>
+      </div>
+    </a>
+
+    <nav class="primary-nav" aria-label="Primary">
+      {nav.map((item) => (
+        <a
+          href={path(item.href)}
+          class:list={['nav-link', section === item.section && 'is-active']}
+          aria-current={section === item.section ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header-tools">
+      {showSearch && <SearchBar />}
+      {showVehiclePicker && (
+        <button class="btn btn-sm vehicle-picker-stub" type="button" aria-label="Vehicle picker (coming soon)">
+          <span class="mono veh-label">My Garage</span>
+          <span class="mono veh-value">Pick vehicle</span>
+        </button>
+      )}
+      <a href={path('/bookmarks')} class="btn btn-ghost btn-icon" aria-label="Bookmarks">
+        <Icon name="bookmark" />
+      </a>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in oklch, var(--bg) 85%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: var(--container);
+    margin-inline: auto;
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 13px;
+  }
+  .app-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--fg);
+    flex-shrink: 0;
+  }
+  .logo-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-sunken);
+    display: block;
+  }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .wordmark {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-size: 14px;
+  }
+  .tagline {
+    font-size: 10px;
+    color: var(--fg-soft);
+    letter-spacing: 0.04em;
+  }
+  .primary-nav {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    margin-inline: 12px;
+  }
+  .nav-link {
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    color: var(--fg-muted);
+    font-weight: 500;
+  }
+  .nav-link:hover { color: var(--fg); background: var(--bg-sunken); }
+  .nav-link.is-active { color: var(--fg); background: var(--bg-sunken); }
+
+  .header-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .vehicle-picker-stub {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 36px;
+    padding: 4px 12px;
+    gap: 0;
+    line-height: 1.1;
+  }
+  .veh-label {
+    font-size: 9px;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .veh-value {
+    font-size: 11px;
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .primary-nav { display: none; }
+  }
+</style>

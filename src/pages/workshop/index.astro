@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout section="workshop" title="Workshop" description="Repair guides, fault codes, parts, and the factory service manual archive.">
+  <section class="container page-stub">
+    <span class="eyebrow">Workshop · 66°N</span>
+    <h1>Fix your Pajero like the factory would.</h1>
+    <p class="lede">
+      The full workshop home is the next chunk of work. For now, the foundation: a header,
+      footer, design tokens, and dark mode. Coming next — guide pages with TOC, parts
+      modules, where-to-buy sidebars, and the 112 migrated topics.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-stub { padding: 72px 0; }
+  .lede { margin-top: 16px; font-size: 17px; color: var(--fg-muted); max-width: 60ch; }
+</style>

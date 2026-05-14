@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+---
+
+<button
+  type="button"
+  class="btn btn-ghost btn-icon theme-toggle"
+  aria-label="Toggle theme"
+  data-theme-toggle
+>
+  <span class="theme-icon-light"><Icon name="sun" /></span>
+  <span class="theme-icon-dark"><Icon name="moon" /></span>
+</button>
+
+<style>
+  .theme-toggle .theme-icon-dark { display: none; }
+  :global([data-theme="dark"]) .theme-toggle .theme-icon-light { display: none; }
+  :global([data-theme="dark"]) .theme-toggle .theme-icon-dark { display: inline-flex; }
+</style>
+
+<script>
+  // Wire toggle. The initial state was set by the inline no-flash script in BaseLayout.
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next =
+        document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('elsewhere.theme', next);
+      } catch {}
+    });
+  });
+</script>

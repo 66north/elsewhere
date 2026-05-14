@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { path } from '../lib/site';
+---
+
+<BaseLayout section="home">
+  <section class="hero container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Elsewhere · Reykjavík · 64.13°N · 21.94°W</span>
+        <h1 class="hero-title">The road, the rig,<br />the workshop manual.</h1>
+        <p class="hero-lede">
+          A personal site about a 2009 Mitsubishi Pajero, the trips it takes, and the
+          workshop manuals that keep it running. Long-form trip reports, an ongoing log of
+          the build, and a hub of 100+ repair guides distilled from the factory service
+          manual.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={path('/journal')}>Read latest entry</a>
+          <a class="btn" href={path('/workshop')}>Browse workshop</a>
+        </div>
+        <dl class="hero-stats mono">
+          <div><dt>Driven</dt><dd>248,310 km</dd></div>
+          <div><dt>Trips</dt><dd>34</dd></div>
+          <div><dt>Guides</dt><dd>112</dd></div>
+        </dl>
+      </div>
+      <div class="hero-art">
+        <img
+          src={path('/assets/pajero-build-reference.png')}
+          alt="The current Pajero build"
+          class="hero-photo"
+        />
+        <span class="status-pill mono">Currently · Húsavík → Egilsstaðir</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="container teaser">
+    <div class="card teaser-card">
+      <div class="teaser-copy">
+        <span class="eyebrow">Workshop · 66°N</span>
+        <h2>Or, if you came for the manuals.</h2>
+        <p>
+          A growing knowledge base of repair guides, fault codes, and a searchable archive
+          of the factory service manual. Built first for me. Useful, hopefully, for you.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={path('/workshop')}>Open the workshop</a>
+          <a class="btn" href={path('/workshop/archive')}>Factory manual archive</a>
+        </div>
+      </div>
+      <dl class="teaser-stats mono">
+        <div><dt>Guides</dt><dd>112</dd></div>
+        <div><dt>Fault codes</dt><dd>1,240</dd></div>
+        <div><dt>Manual pages</dt><dd>19,617</dd></div>
+        <div><dt>Generations</dt><dd>3</dd></div>
+      </dl>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding-top: 72px; padding-bottom: 64px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .hero-title {
+    font-size: clamp(40px, 5.5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-top: 16px;
+  }
+  .hero-lede {
+    margin-top: 20px;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    max-width: 56ch;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 28px;
+    margin: 32px 0 0;
+    padding: 0;
+    color: var(--fg-soft);
+    font-size: 12px;
+  }
+  .hero-stats div { display: flex; flex-direction: column; }
+  .hero-stats dt { letter-spacing: 0.08em; text-transform: uppercase; font-size: 10px; }
+  .hero-stats dd {
+    margin: 4px 0 0;
+    font-size: 18px;
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  .hero-art {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+  }
+  .hero-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .status-pill {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    padding: 6px 10px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+
+  .teaser { padding-top: 32px; }
+  .teaser-card {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    padding: 32px;
+    align-items: center;
+  }
+  .teaser-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 0;
+    padding: 24px;
+    background: var(--bg-sunken);
+    border-radius: var(--radius);
+  }
+  .teaser-stats div { display: flex; flex-direction: column; }
+  .teaser-stats dt { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-soft); }
+  .teaser-stats dd { margin: 4px 0 0; font-size: 22px; color: var(--fg); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .teaser-card { grid-template-columns: 1fr; }
+  }
+</style>

@@ -33,6 +33,11 @@ export default defineConfig({
           return { ...item, priority: 0.9, changefreq: 'weekly' };
         }
 
+        // Bucket list pages - frequently updated
+        if (url.includes('/bucketlist/')) {
+          return { ...item, priority: 0.85, changefreq: 'monthly' };
+        }
+
         // Workshop guides - core content, occasionally updated
         if (url.includes('/workshop/guides/')) {
           return { ...item, priority: 0.85, changefreq: 'monthly' };

@@ -8,11 +8,12 @@ export const site = {
   baseUrl: '/elsewhere',
 } as const;
 
-export type Section = 'home' | 'journal' | 'build' | 'workshop' | 'about';
+export type Section = 'home' | 'journal' | 'build' | 'workshop' | 'bucketlist' | 'about';
 
 export const nav: { label: string; href: string; section: Section }[] = [
   { label: 'Home', href: '/', section: 'home' },
   { label: 'Journal', href: '/journal', section: 'journal' },
+  { label: 'Bucket List', href: '/bucketlist', section: 'bucketlist' },
   { label: 'The Build', href: '/build', section: 'build' },
   { label: 'Workshop', href: '/workshop', section: 'workshop' },
   { label: 'About', href: '/about', section: 'about' },

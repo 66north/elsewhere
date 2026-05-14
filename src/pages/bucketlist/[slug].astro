@@ -1,0 +1,361 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { path } from '../../lib/site';
+import { bucketlistItems } from '../../lib/bucketlist';
+
+interface Props {
+  destination: typeof bucketlistItems[0];
+}
+
+export async function getStaticPaths() {
+  return bucketlistItems.map((item) => ({
+    params: { slug: item.slug },
+    props: { destination: item },
+  }));
+}
+
+const { destination } = Astro.props;
+const { title, region, countries, status, description, difficulty, estimated_duration, best_season, visited_date } = destination;
+
+// Status styling
+const statusConfig = {
+  visited: { label: 'Visited', icon: '✓', color: 'var(--color-success, #10b981)' },
+  'in-progress': { label: 'In Progress', icon: '⟳', color: 'var(--color-warning, #f59e0b)' },
+  pending: { label: 'Pending', icon: '○', color: 'var(--color-text-muted)' },
+};
+
+const currentStatus = statusConfig[status] || statusConfig.pending;
+
+// Get navigation
+const sorted = bucketlistItems.sort((a, b) => b.priority - a.priority);
+const currentIndex = sorted.findIndex((e) => e.slug === destination.slug);
+const previousEntry = currentIndex > 0 ? sorted[currentIndex - 1] : null;
+const nextEntry = currentIndex < sorted.length - 1 ? sorted[currentIndex + 1] : null;
+
+// BreadcrumbList schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Bucket List',
+      item: 'https://66north.github.io/elsewhere/bucketlist',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: title,
+      item: `https://66north.github.io/elsewhere/bucketlist/${destination.slug}`,
+    },
+  ],
+};
+
+// Place schema
+const placeSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Place',
+  name: title,
+  description: description,
+  geo: {
+    '@type': 'GeoShape',
+    areaServed: countries,
+  },
+};
+---
+
+<BaseLayout section="home">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(placeSchema)} />
+
+  <article class="container">
+    <header class="article-header">
+      <div class="breadcrumb">
+        <a href={path('/')}>Home</a>
+        <span>/</span>
+        <a href={path('/bucketlist')}>Bucket List</a>
+        <span>/</span>
+        <span>{title}</span>
+      </div>
+
+      <h1>{title}</h1>
+
+      <div class="destination-meta">
+        <div class="meta-status" style={`--accent-color: ${currentStatus.color}`}>
+          <span class="status-badge">{currentStatus.icon} {currentStatus.label}</span>
+        </div>
+
+        <div class="meta-details">
+          <div class="detail">
+            <span class="label">Region</span>
+            <span class="value">{region}</span>
+          </div>
+          {countries && (
+            <div class="detail">
+              <span class="label">Countries</span>
+              <span class="value">{countries.join(', ')}</span>
+            </div>
+          )}
+          {estimated_duration && (
+            <div class="detail">
+              <span class="label">Duration</span>
+              <span class="value">{estimated_duration} days</span>
+            </div>
+          )}
+          {best_season && (
+            <div class="detail">
+              <span class="label">Best Season</span>
+              <span class="value">{best_season}</span>
+            </div>
+          )}
+          {difficulty && (
+            <div class="detail">
+              <span class="label">Difficulty</span>
+              <span class="value" class:list={['difficulty', difficulty]}>{difficulty}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {status === 'visited' && visited_date && (
+        <div class="visited-banner">
+          ✓ Visited on {new Date(visited_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
+      )}
+    </header>
+
+    <div class="article-content">
+      <p>{description}</p>
+    </div>
+
+    {(previousEntry || nextEntry) && (
+      <nav class="article-nav">
+        {previousEntry ? (
+          <a href={path(`/bucketlist/${previousEntry.slug}`)} class="nav-prev">
+            <span class="nav-label">← Previous</span>
+            <span class="nav-title">{previousEntry.title}</span>
+          </a>
+        ) : (
+          <div />
+        )}
+        {nextEntry ? (
+          <a href={path(`/bucketlist/${nextEntry.slug}`)} class="nav-next">
+            <span class="nav-label">Next →</span>
+            <span class="nav-title">{nextEntry.title}</span>
+          </a>
+        ) : null}
+      </nav>
+    )}
+
+    <div class="back-link">
+      <a href={path('/bucketlist')}>← Back to all destinations</a>
+    </div>
+  </article>
+
+  <style>
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb a {
+      color: var(--color-text);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .article-header {
+      margin-bottom: 3rem;
+    }
+
+    .article-header h1 {
+      font-size: 2.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .destination-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: var(--color-bg-secondary);
+      border-radius: 0.5rem;
+    }
+
+    .meta-status {
+      border-left: 4px solid var(--accent-color, #666);
+      padding-left: 1rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 0.875rem;
+      background: var(--accent-color, #f0f0f0);
+      color: white;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .meta-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .detail .label {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .detail .value {
+      font-size: 1rem;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    .difficulty {
+      text-transform: capitalize;
+    }
+
+    .difficulty.extreme {
+      color: #dc2626;
+    }
+
+    .difficulty.hard {
+      color: #f59e0b;
+    }
+
+    .difficulty.moderate {
+      color: #3b82f6;
+    }
+
+    .visited-banner {
+      padding: 1rem;
+      background: var(--color-success, #d1fae5);
+      color: var(--color-success, #065f46);
+      border-radius: 0.5rem;
+      font-weight: 500;
+    }
+
+    .article-content {
+      font-size: 1.0625rem;
+      line-height: 1.75;
+      margin-bottom: 4rem;
+    }
+
+    .article-content h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .article-content h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-content ul,
+    .article-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .article-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .article-content strong {
+      font-weight: 600;
+    }
+
+    .article-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      margin-top: 4rem;
+    }
+
+    .article-nav a {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      background: var(--color-bg-secondary);
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .article-nav a:hover {
+      transform: translateX(0.5rem);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-label {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-title {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .nav-prev {
+      text-align: left;
+    }
+
+    .nav-next {
+      text-align: right;
+      grid-column: 2;
+    }
+
+    .back-link {
+      padding-top: 2rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .back-link a {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

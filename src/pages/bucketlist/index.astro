@@ -1,0 +1,244 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { path } from '../../lib/site';
+import { bucketlistItems } from '../../lib/bucketlist';
+
+const sorted = bucketlistItems.sort((a, b) => b.priority - a.priority);
+
+// Group by status
+const statuses = {
+  visited: sorted.filter(d => d.status === 'visited'),
+  'in-progress': sorted.filter(d => d.status === 'in-progress'),
+  pending: sorted.filter(d => d.status === 'pending'),
+};
+
+// BreadcrumbList schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://66north.github.io/elsewhere',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Bucket List',
+      item: 'https://66north.github.io/elsewhere/bucketlist',
+    },
+  ],
+};
+
+// CollectionPage schema
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Bucket List',
+  description: 'Expedition destinations across Europe and North Africa',
+  url: 'https://66north.github.io/elsewhere/bucketlist',
+  hasPart: sorted.slice(0, 10).map(d => ({
+    '@type': 'Thing',
+    name: d.title,
+    url: `https://66north.github.io/elsewhere/bucketlist/${d.slug}`,
+  })),
+};
+---
+
+<BaseLayout section="home">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
+
+  <section class="container">
+    <header class="content-header">
+      <h1>Bucket List</h1>
+      <p class="lead">Expedition destinations across Europe and North Africa. Tracked, planned, and pursued.</p>
+    </header>
+
+    {statuses.visited.length > 0 && (
+      <section class="status-group">
+        <h2 class="status-title visited">✓ Visited ({statuses.visited.length})</h2>
+        <div class="destination-grid">
+          {statuses.visited.map(d => (
+            <a href={path(`/bucketlist/${d.slug}`)} class="destination-card visited">
+              <div class="card-image">
+                <img src={d.image} alt={d.title} />
+              </div>
+              <div class="card-content">
+                <h3>{d.title}</h3>
+                <p class="region">{d.region}</p>
+                <p class="countries">{d.countries.join(' • ')}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {statuses['in-progress'].length > 0 && (
+      <section class="status-group">
+        <h2 class="status-title in-progress">⟳ In Progress ({statuses['in-progress'].length})</h2>
+        <div class="destination-grid">
+          {statuses['in-progress'].map(d => (
+            <a href={path(`/bucketlist/${d.slug}`)} class="destination-card in-progress">
+              <div class="card-image">
+                <img src={d.image} alt={d.title} />
+              </div>
+              <div class="card-content">
+                <h3>{d.title}</h3>
+                <p class="region">{d.region}</p>
+                <p class="countries">{d.countries.join(' • ')}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {statuses.pending.length > 0 && (
+      <section class="status-group">
+        <h2 class="status-title pending">○ Pending ({statuses.pending.length})</h2>
+        <div class="destination-grid">
+          {statuses.pending.map(d => (
+            <a href={path(`/bucketlist/${d.slug}`)} class="destination-card pending">
+              <div class="card-image">
+                <img src={d.image} alt={d.title} />
+              </div>
+              <div class="card-content">
+                <h3>{d.title}</h3>
+                <p class="region">{d.region}</p>
+                <p class="countries">{d.countries.join(' • ')}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </section>
+
+  <style>
+    header.content-header {
+      margin-bottom: 3rem;
+    }
+
+    header.content-header h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    header.content-header .lead {
+      font-size: 1.125rem;
+      color: var(--color-text-muted);
+      max-width: 50ch;
+    }
+
+    .status-group {
+      margin-bottom: 4rem;
+    }
+
+    .status-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .status-title.visited {
+      color: var(--color-success, #10b981);
+    }
+
+    .status-title.in-progress {
+      color: var(--color-warning, #f59e0b);
+    }
+
+    .status-title.pending {
+      color: var(--color-text-muted);
+    }
+
+    .destination-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .destination-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-secondary);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .destination-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .destination-card.visited {
+      border-color: var(--color-success, #10b981);
+    }
+
+    .destination-card.in-progress {
+      border-color: var(--color-warning, #f59e0b);
+    }
+
+    .destination-card.pending {
+      border-color: var(--color-border);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+      background: var(--color-bg);
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .destination-card:hover .card-image img {
+      transform: scale(1.05);
+    }
+
+    .card-content {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-content h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--color-text);
+    }
+
+    .card-content p {
+      font-size: 0.875rem;
+      margin: 0.25rem 0;
+    }
+
+    .card-content .region {
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .card-content .countries {
+      color: var(--color-text-muted);
+      font-size: 0.8125rem;
+    }
+  </style>
+</BaseLayout>

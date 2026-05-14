@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { path } from '../../lib/site';
 import { bucketlistItems } from '../../lib/bucketlist';
+import BucketListMap from '../../components/BucketListMap';
 
 const sorted = bucketlistItems.sort((a, b) => b.priority - a.priority);
 
@@ -50,12 +51,15 @@ const collectionSchema = {
 <BaseLayout section="home">
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <section class="container">
     <header class="content-header">
       <h1>Bucket List</h1>
       <p class="lead">Expedition destinations across Europe and North Africa. Tracked, planned, and pursued.</p>
     </header>
+
+    <BucketListMap client:load destinations={bucketlistItems} />
 
     {statuses.visited.length > 0 && (
       <section class="status-group">

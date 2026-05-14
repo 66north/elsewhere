@@ -13,6 +13,8 @@ export interface BucketListItem {
   notes?: string;
   image?: string;
   content?: string;
+  latitude: number;
+  longitude: number;
 }
 
 export const bucketlistItems: BucketListItem[] = [
@@ -29,6 +31,8 @@ export const bucketlistItems: BucketListItem[] = [
     best_season: 'November to February',
     notes: 'Requires permits, support vehicle, and desert experience. Spectacular and genuinely challenging.',
     image: '/assets/bucketlist-sahara.jpg',
+    latitude: 25.5,
+    longitude: 0,
   },
   {
     slug: 'pyrenees-traverse',
@@ -43,6 +47,8 @@ export const bucketlistItems: BucketListItem[] = [
     best_season: 'January to March',
     notes: 'Requires winter tires, avalanche awareness, and mountain driving experience. Stunning views, minimal crowds in winter.',
     image: '/assets/bucketlist-pyrenees.jpg',
+    latitude: 42.7,
+    longitude: 1.0,
   },
   {
     slug: 'faroe-islands',
@@ -58,6 +64,8 @@ export const bucketlistItems: BucketListItem[] = [
     best_season: 'June to September',
     notes: 'Ferry required from Denmark or Iceland. Roads are narrow and twisting but well-maintained. Incredible scenery, minimal tourists.',
     image: '/assets/bucketlist-faroe.jpg',
+    latitude: 61.9,
+    longitude: -6.9,
   },
   {
     slug: 'dakar-rally-route',
@@ -72,5 +80,7 @@ export const bucketlistItems: BucketListItem[] = [
     best_season: 'November to March',
     notes: 'Partially planned, support vehicle in place. Routes verified with local guides. Intended as 2026 expedition.',
     image: '/assets/bucketlist-dakar.jpg',
+    latitude: 14.5,
+    longitude: -8.0,
   },
 ];

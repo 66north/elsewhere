@@ -19,6 +19,7 @@
     "@fontsource/geist-sans": "^5.2.5",
     "astro": "^6.3.3",
     "js-yaml": "^4.1.1",
+    "leaflet": "^1.9.4",
     "preact": "^10.29.1"
   }
 }

@@ -1,20 +1,400 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { path } from '../../lib/site';
+
+// Get all guides
+const guides = await getCollection('guides');
+
+// Group by category and compute stats
+const byCategory = new Map<string, any[]>();
+guides.forEach((guide) => {
+  const cat = guide.data.category || 'other';
+  if (!byCategory.has(cat)) byCategory.set(cat, []);
+  byCategory.get(cat)!.push(guide);
+});
+
+// Build category stats
+const categories = Array.from(byCategory.entries())
+  .map(([name, guides]) => {
+    const times = guides
+      .map((g) => g.data.time_minutes)
+      .filter((t) => t !== undefined && t > 0);
+    const minTime = times.length ? Math.min(...times) : 0;
+    const maxTime = times.length ? Math.max(...times) : 0;
+
+    const diffCounts = { easy: 0, moderate: 0, hard: 0 };
+    guides.forEach((g) => {
+      const d = g.data.difficulty || 'moderate';
+      if (d in diffCounts) diffCounts[d as keyof typeof diffCounts]++;
+    });
+
+    // Pick 2 featured guides from this category
+    const featured = guides.slice(0, 2);
+
+    return {
+      name,
+      count: guides.length,
+      timeRange: minTime === maxTime ? `${minTime}m` : `${minTime}–${maxTime}m`,
+      diffCounts,
+      guides,
+      featured,
+    };
+  })
+  .sort((a, b) => b.count - a.count);
+
+const totalGuides = guides.length;
+const avgTime = Math.round(
+  guides.reduce((sum, g) => sum + (g.data.time_minutes || 0), 0) / guides.length
+);
 ---
 
 <BaseLayout section="workshop" title="Workshop" description="Repair guides, fault codes, parts, and the factory service manual archive.">
-  <section class="container page-stub">
-    <span class="eyebrow">Workshop · 66°N</span>
-    <h1>Fix your Pajero like the factory would.</h1>
-    <p class="lede">
-      The full workshop home is the next chunk of work. For now, the foundation: a header,
-      footer, design tokens, and dark mode. Coming next — guide pages with TOC, parts
-      modules, where-to-buy sidebars, and the 112 migrated topics.
-    </p>
-  </section>
-</BaseLayout>
+  <div class="workshop-hub">
+    <!-- Hero section -->
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="eyebrow">Workshop · 66°N</span>
+        <h1>Fix your Pajero like the factory would.</h1>
+        <p class="lede">
+          {totalGuides} comprehensive guides covering maintenance, troubleshooting, parts, specifications, and diagnostic codes for all Pajero generations.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value">{totalGuides}</span>
+            <span class="stat-label">Guides</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{avgTime}m</span>
+            <span class="stat-label">Avg time</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{categories.length}</span>
+            <span class="stat-label">Categories</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<style>
-  .page-stub { padding: 72px 0; }
-  .lede { margin-top: 16px; font-size: 17px; color: var(--fg-muted); max-width: 60ch; }
-</style>
+    <!-- Category grid -->
+    <section class="categories-section">
+      <h2 class="section-title">Browse by category</h2>
+      <div class="categories-grid">
+        {categories.map((cat) => (
+          <a href={path('/workshop/guides')} class="category-card">
+            <div class="category-header">
+              <h3>{cat.name}</h3>
+              <span class="guide-count">{cat.count}</span>
+            </div>
+
+            <div class="category-time">
+              <span class="time-label">Typical time:</span>
+              <span class="time-value">{cat.timeRange}</span>
+            </div>
+
+            <div class="difficulty-breakdown">
+              {cat.diffCounts.easy > 0 && (
+                <span class="diff-pill diff-easy">
+                  <span class="diff-label">Easy</span>
+                  <span class="diff-count">{cat.diffCounts.easy}</span>
+                </span>
+              )}
+              {cat.diffCounts.moderate > 0 && (
+                <span class="diff-pill diff-moderate">
+                  <span class="diff-label">Moderate</span>
+                  <span class="diff-count">{cat.diffCounts.moderate}</span>
+                </span>
+              )}
+              {cat.diffCounts.hard > 0 && (
+                <span class="diff-pill diff-hard">
+                  <span class="diff-label">Hard</span>
+                  <span class="diff-count">{cat.diffCounts.hard}</span>
+                </span>
+              )}
+            </div>
+
+            <div class="card-footer">
+              <span class="view-link">View guides</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Quick filters (placeholder) -->
+    <section class="filters-section">
+      <h2 class="section-title">Filter by</h2>
+      <div class="filter-chips">
+        <button class="chip chip-active" type="button">All guides</button>
+        <button class="chip" type="button">Gen 2</button>
+        <button class="chip" type="button">Gen 3</button>
+        <button class="chip" type="button">Gen 4</button>
+        <button class="chip" type="button">Gen 5</button>
+      </div>
+    </section>
+  </div>
+
+  <style>
+    .workshop-hub {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-page);
+    }
+
+    .hero {
+      padding: 80px 0 60px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner { }
+
+    .hero h1 {
+      font-size: 40px;
+      margin: 12px 0 24px;
+      color: var(--fg);
+    }
+
+    .lede {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--fg-muted);
+      max-width: 60ch;
+      margin-bottom: 32px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      font-weight: 500;
+    }
+
+    .categories-section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-soft);
+      margin-bottom: 24px;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .category-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+      color: inherit;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .category-card:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .category-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+      flex: 1;
+    }
+
+    .guide-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--bg-sunken);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      flex-shrink: 0;
+    }
+
+    .category-time {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .time-label {
+      color: var(--fg-muted);
+    }
+
+    .time-value {
+      color: var(--fg);
+      font-weight: 600;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .difficulty-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .diff-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .diff-easy {
+      background: oklch(0.85 0.12 150);
+      color: oklch(0.35 0.1 150);
+    }
+
+    .diff-moderate {
+      background: oklch(0.82 0.12 70);
+      color: oklch(0.4 0.1 70);
+    }
+
+    .diff-hard {
+      background: oklch(0.8 0.12 10);
+      color: oklch(0.35 0.1 10);
+    }
+
+    .diff-label {
+      opacity: 0.7;
+    }
+
+    .diff-count {
+      font-weight: 700;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+
+    .view-link {
+      font-weight: 500;
+      color: var(--fg);
+    }
+
+    .arrow {
+      opacity: 0.5;
+      transition: opacity 0.15s;
+    }
+
+    .category-card:hover .arrow {
+      opacity: 1;
+    }
+
+    .filters-section {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-elev);
+      color: var(--fg-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .chip:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+      color: var(--fg);
+    }
+
+    .chip-active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .chip-active:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 60px 0 48px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero-stats {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

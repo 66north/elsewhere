@@ -1,0 +1,144 @@
+---
+/**
+ * TableOfContents — sticky left sidebar with nested headings.
+ * For v1, renders a static structure. Scroll tracking (active state) is a future JS enhancement.
+ */
+
+interface Heading {
+  level: number; // 2 or 3
+  text: string;
+  slug: string;
+}
+
+interface Props {
+  headings: Heading[];
+  related?: Array<{ slug: string; title: string }>;
+}
+
+const { headings = [], related = [] } = Astro.props;
+
+const isLevel3 = (level: number) => level === 3;
+---
+
+<aside class="toc sticky">
+  <nav class="toc-nav">
+    <span class="eyebrow">On this page</span>
+
+    <ul class="toc-list">
+      {headings.map((heading) => (
+        <li class:list={['toc-item', isLevel3(heading.level) && 'is-h3']}>
+          <a href={`#${heading.slug}`} class="toc-link">
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {related.length > 0 && (
+      <>
+        <div class="toc-divider" />
+        <span class="eyebrow">Related</span>
+
+        <ul class="related-list">
+          {related.map((item) => (
+            <li>
+              <a href={`/workshop/guides/${item.slug}`} class="toc-link">
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </nav>
+</aside>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    width: 220px;
+    padding-right: 20px;
+  }
+
+  .toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .eyebrow { display: block; }
+
+  .toc-list,
+  .related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .toc-item {
+    margin: 0;
+  }
+
+  .toc-item.is-h3 {
+    margin-left: 12px;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 2px 0;
+    padding-left: 12px;
+    margin-left: -12px;
+    border-left: 2px solid transparent;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .toc-link:hover {
+    color: var(--fg);
+  }
+
+  .toc-item.is-h3 .toc-link {
+    font-size: 12px;
+  }
+
+  /* Active state — requires JS to manage */
+  .toc-link.is-active {
+    color: var(--fg);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .toc-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0;
+  }
+
+  .related-list .toc-link {
+    font-size: 12px;
+  }
+
+  /* Scrollbar styling */
+  .toc::-webkit-scrollbar {
+    width: 4px;
+  }
+  .toc::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .toc::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .toc::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
+</style>

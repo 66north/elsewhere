@@ -1,0 +1,127 @@
+---
+/**
+ * WhereToBuy — sidebar card with vendor options for a part.
+ * Shows vendor logos, names, prices, and "Best price" badges.
+ * Used on the right sidebar of guide pages.
+ */
+
+interface Vendor {
+  name: string;
+  price?: number;
+  url: string;
+  bestPrice?: boolean;
+}
+
+interface Props {
+  vendors?: Vendor[];
+  showLabel?: boolean;
+}
+
+const { vendors = [], showLabel = true } = Astro.props;
+
+// Placeholder vendors for v1 — will be wired to real data later
+const defaultVendors = [
+  { name: 'Amazon', price: null, url: '#', bestPrice: false },
+  { name: 'AutoDoc', price: null, url: '#', bestPrice: false },
+  { name: 'eBay', price: null, url: '#', bestPrice: false },
+];
+
+const displayVendors = vendors.length > 0 ? vendors : defaultVendors;
+---
+
+<div class="where-to-buy card">
+  {showLabel && <span class="eyebrow">Where to buy</span>}
+
+  <div class="vendor-list">
+    {displayVendors.map((vendor) => (
+      <a href={vendor.url} class="vendor-row" target="_blank" rel="noopener sponsored">
+        <div class="vendor-logo">{vendor.name.slice(0, 2).toUpperCase()}</div>
+        <div class="vendor-info">
+          <div class="vendor-name">{vendor.name}</div>
+          {vendor.price && (
+            <div class="vendor-price mono">€{vendor.price}</div>
+          )}
+        </div>
+        {vendor.bestPrice && <span class="best-price mono">Best</span>}
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .where-to-buy {
+    padding: 16px;
+    top: 80px;
+    position: sticky;
+  }
+
+  .eyebrow { display: block; margin-bottom: 12px; }
+
+  .vendor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vendor-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elev);
+    transition: background 0.15s, border-color 0.15s;
+    color: inherit;
+    text-decoration: none;
+  }
+  .vendor-row:hover {
+    background: var(--bg-sunken);
+    border-color: var(--border-strong);
+  }
+
+  .vendor-logo {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-sunken);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg-muted);
+    flex-shrink: 0;
+  }
+
+  .vendor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .vendor-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .vendor-price {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .best-price {
+    font-size: 10px;
+    padding: 3px 8px;
+    background: var(--ok);
+    color: white;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+/**
+ * CompatBadge — shows whether a guide is compatible with the user's saved garage.
+ * Green pill: "● Fits yours" if compatible
+ * Muted pill: "● Other gen" if not compatible
+ * Client-side JS reads the garage from localStorage and updates dynamically.
+ */
+
+interface Props {
+  gens?: string[];
+  small?: boolean;
+  class?: string;
+}
+
+const { gens = [], small = false, class: className = '' } = Astro.props;
+
+// Server-side: render a default state. Client will hydrate with actual garage data.
+const isCompatible = gens.length === 0; // Default: no gens specified = compatible with all
+const label = isCompatible ? 'Fits yours' : 'Other gen';
+---
+
+<span
+  class:list={['compat-badge', { 'is-small': small, 'is-compatible': isCompatible }, className]}
+  data-compat-badge
+  data-gens={JSON.stringify(gens)}
+  role="status"
+  aria-live="polite"
+>
+  <span class="dot"></span>
+  <span class="label">{label}</span>
+</span>
+
+<style>
+  .compat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'Geist Mono', monospace;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .compat-badge.is-compatible {
+    background: oklch(0.85 0.12 150);
+    border-color: oklch(0.7 0.12 150);
+    color: oklch(0.35 0.1 150);
+  }
+
+  .compat-badge.is-small {
+    height: 18px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .label {
+    line-height: 1;
+  }
+</style>
+
+<script>
+  // Client-side: read garage from localStorage and update badge state
+  type Garage = {
+    gen?: string;
+    engine?: string;
+    year?: number;
+  };
+
+  function parseGuideGens(genesStr: string): string[] {
+    // Parse format: "Gen 2", "Gen 3 · Gen 4", "All", etc.
+    if (!genesStr || genesStr === 'All') return [];
+    return genesStr
+      .split('·')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  function isCompatible(guideGens: string[], garage: Garage | null): boolean {
+    if (!garage || guideGens.length === 0) return true;
+    return guideGens.includes(garage.gen || '');
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-compat-badge]').forEach((badge) => {
+    const genesStr = badge.dataset.gens || '[]';
+    const guideGens = JSON.parse(genesStr) as string[];
+
+    const updateBadge = () => {
+      try {
+        const garageStr = localStorage.getItem('elsewhere.garage');
+        const garage = garageStr ? JSON.parse(garageStr) : null;
+        const compatible = isCompatible(guideGens, garage);
+
+        badge.classList.toggle('is-compatible', compatible);
+        badge.querySelector('.label')!.textContent = compatible ? 'Fits yours' : 'Other gen';
+      } catch (e) {
+        // Fail gracefully
+      }
+    };
+
+    // Update on load and when garage changes
+    updateBadge();
+    window.addEventListener('elsewhere.garage.change', updateBadge);
+  });
+</script>

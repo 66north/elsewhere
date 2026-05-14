@@ -1,0 +1,268 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TableOfContents from '../../../components/TableOfContents.astro';
+import PartsModule from '../../../components/PartsModule.astro';
+import WhereToBuy from '../../../components/WhereToBuy.astro';
+import CompatBadge from '../../../components/CompatBadge.astro';
+import {
+  extractHeadings,
+  generateHowToSchema,
+  getRelatedGuides,
+  getDifficultyLabel,
+  getSkillLevel,
+  estimateTime,
+} from '../../../lib/guide';
+import { path } from '../../../lib/site';
+
+interface Props {
+  entry: any;
+}
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { slug, title, category, gens = [], engines = [], difficulty, time_minutes, cost_min_eur, cost_max_eur, parts = [], related = [] } = entry.data;
+
+// In Astro 6 with glob loader, the entry is imported as a module
+// The default export is the Astro component
+const module = await import(`../../../content/guides/${slug}.mdx`);
+const Content = module.default;
+
+// Generate schema for JSON-LD
+const guideUrl = path(`/workshop/guides/${slug}`);
+const howToSchema = generateHowToSchema(entry.data, guideUrl);
+
+// Get related guides (TODO: fetch actual titles)
+const relatedGuides = await getRelatedGuides(related);
+
+// For heading extraction, we'll do it on the client side or extract from markdown
+// For now, we'll parse headings from the MDX string during build
+let headings: any[] = [];
+---
+
+<BaseLayout title={title} description={`${title} for Mitsubishi Pajero`} section="workshop">
+  <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+
+  <div class="guide-layout">
+    <!-- Left sidebar: Table of Contents -->
+    <aside class="sidebar sidebar-left">
+      <TableOfContents headings={headings} related={relatedGuides} />
+    </aside>
+
+    <!-- Main content area -->
+    <article class="guide-article">
+      <!-- Header section with badges -->
+      <header class="guide-header">
+        <div class="guide-title-row">
+          <h1>{title}</h1>
+          <CompatBadge gens={gens} />
+        </div>
+
+        <!-- Metadata chips -->
+        <div class="guide-chips">
+          {gens.length > 0 && (
+            <span class="chip">
+              <span class="chip-label">Generation</span>
+              <span class="chip-value">{gens.join(' · ')}</span>
+            </span>
+          )}
+          {engines.length > 0 && (
+            <span class="chip">
+              <span class="chip-label">Engine</span>
+              <span class="chip-value">{engines.join(' · ')}</span>
+            </span>
+          )}
+          {difficulty && (
+            <span class="chip">
+              <span class="chip-label">Difficulty</span>
+              <span class="chip-value">{getDifficultyLabel(difficulty)}</span>
+            </span>
+          )}
+          {time_minutes && (
+            <span class="chip">
+              <span class="chip-label">Time</span>
+              <span class="chip-value">{time_minutes}m</span>
+            </span>
+          )}
+        </div>
+      </header>
+
+      <!-- Guide body -->
+      <div class="guide-body">
+        <Content />
+      </div>
+
+      <!-- Parts module (inline if parts exist) -->
+      {parts.length > 0 && <PartsModule parts={parts} />}
+    </article>
+
+    <!-- Right sidebar: Where to Buy -->
+    <aside class="sidebar sidebar-right">
+      <WhereToBuy />
+    </aside>
+  </div>
+
+  <style>
+    .guide-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr 320px;
+      gap: 40px;
+      padding: 40px var(--spacing-page);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .sidebar {
+      /* Sidebars are sticky and will float */
+    }
+
+    .sidebar-left {
+      grid-column: 1;
+    }
+
+    .sidebar-right {
+      grid-column: 3;
+    }
+
+    .guide-article {
+      grid-column: 2;
+    }
+
+    .guide-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .guide-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .guide-title-row h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.2;
+      color: var(--fg);
+    }
+
+    .guide-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: var(--bg-sunken);
+      border: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .chip-label {
+      color: var(--fg-muted);
+      font-weight: 500;
+    }
+
+    .chip-value {
+      color: var(--fg);
+      font-weight: 600;
+    }
+
+    .guide-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--fg);
+    }
+
+    .guide-body :global(h2) {
+      margin-top: 32px;
+      margin-bottom: 16px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--fg);
+      scroll-margin-top: 100px;
+    }
+
+    .guide-body :global(h3) {
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--fg);
+      scroll-margin-top: 100px;
+    }
+
+    .guide-body :global(p) {
+      margin-bottom: 12px;
+    }
+
+    .guide-body :global(ul),
+    .guide-body :global(ol) {
+      margin: 12px 0 12px 24px;
+    }
+
+    .guide-body :global(li) {
+      margin-bottom: 8px;
+    }
+
+    .guide-body :global(code) {
+      padding: 2px 6px;
+      background: var(--bg-sunken);
+      border-radius: 3px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+    }
+
+    .guide-body :global(pre) {
+      padding: 16px;
+      background: var(--bg-sunken);
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    .guide-body :global(pre code) {
+      padding: 0;
+      background: none;
+    }
+
+    /* Responsive: hide sidebars on smaller screens */
+    @media (max-width: 1200px) {
+      .guide-layout {
+        grid-template-columns: 1fr 280px;
+        gap: 24px;
+      }
+      .sidebar-left {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .guide-layout {
+        grid-template-columns: 1fr;
+        padding: 24px var(--spacing-page);
+      }
+      .sidebar-right {
+        display: none;
+      }
+      .guide-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</BaseLayout>

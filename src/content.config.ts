@@ -5,6 +5,11 @@ const guides = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/guides' }),
 });
 
+const journal = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/journal' }),
+});
+
 export const collections = {
   guides,
+  journal,
 };

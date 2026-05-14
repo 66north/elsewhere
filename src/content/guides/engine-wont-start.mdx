@@ -1,0 +1,58 @@
+---
+slug: engine-wont-start
+title: Engine Won't Start — Diagnosis
+category: troubleshoot
+gens:
+  - Gen 4
+engines:
+  - 4M41
+  - 6G75
+difficulty: moderate
+time_minutes: 30
+cost_min_eur: 2008
+cost_max_eur: 2010
+parts:
+  - {"name":"Battery — automotive (12V, 60–100 Ah)","oem":"Various OEM options available","notes":"Most common cause of no-start. A 5-year-old battery losing capacity is normal","verify":false}
+  - {"name":"Starter motor (if starter is stuck or won't engage)","oem":"4M41: MD372609 | 6G75: MD369881","notes":"Starters fail intermittently before complete failure. If starter sometimes engages, lubricate solenoid plunger with lithium grease first","verify":false}
+  - {"name":"Fuel pump (if no prime sound when ignition is on)","oem":"4M41 diesel: MZ690538 | 6G75 petrol: MD191922","notes":"Both engines use electric fuel pumps. Pump failure prevents fuel delivery. Test before replacing","verify":false}
+  - {"name":"Glow plug controller (diesel, if all plugs have power but won't glow)","oem":"4M41: MD348800","notes":"Rare failure, but controller aging is possible on 2008–2010 models","verify":false}
+last_reviewed: 2026-05-14
+related:
+  - battery-replacement
+  - fuel-filter-diesel
+  - glow-plugs
+  - spark-plugs
+---
+
+An engine that refuses to start can have dozens of root causes. This guide walks you through the most common failure modes for the 4M41 diesel and 6G75 petrol, from simple (dead battery) to complex (failed fuel pump, bad starter). We focus on systematic diagnosis rather than guessing, to isolate the problem quickly without unnecessary parts replacement.
+
+## Symptoms
+
+- Key turn produces no crank (silent, no starter noise) — likely battery or electrical
+- Key turn produces slow crank (sluggish starter) — weak battery or bad starter
+- Engine cranks normally but does not fire (no ignition) — fuel or ignition issue
+- Engine fires but dies immediately (backfires, rough idle) — ignition timing or fuel quality
+
+## Tools needed
+
+- Multimeter or analog voltmeter (to measure battery voltage, fuel pump signal)
+- Jumper cables (to test if weak battery is the issue)
+- Socket set and screwdrivers (to disconnect battery terminals, remove spark plugs, etc.)
+- Flashlight or headlamp (work under the car, see in dark engine bay)
+- Spark plug socket and ratchet (petrol engines, to check for spark)
+- MUT-III scan tool (optional; to read diagnostic codes if Check Engine light is on)
+
+## Tips
+
+- Do NOT crank the engine continuously for more than 10 seconds at a time. This drains the battery and overheats the starter. Crank for 5 seconds, wait 30 seconds, try again
+- A completely dead battery (0V) cannot be jump-started. It must be charged or replaced. Even a weak battery (10V) can sometimes crank slowly and might eventually catch
+- If the engine cranks but won't fire, DO NOT keep cranking — you are wasting fuel and battery. Stop, diagnose, then try again
+- Diesel engines are harder to start cold than petrol engines. The glow plug warm-up is essential. If you skip this step (turn key straight to START without waiting 3–5 seconds for glow plug preheat), cold starts may fail
+- On very cold mornings (below −10°C), diesel fuel can gel, preventing fuel flow. If fuel looks cloudy, add diesel fuel additive (Techron, Power Service) or drain/replace the tank
+- Petrol engines with flooded cylinders (too much fuel, not enough spark) should be cranked with the throttle wide open to lean the mixture and allow air in
+- If the engine turns over weakly but catches and idles, suspect a weak battery — charge it fully before attempting to drive
+
+## Factory procedure reference
+
+- **Starting system — Engine Management & Ignition (Section 80)** (M1, section 80)
+- **Fuel pump control — Fuel system (Section 13)** (M1, section 13)

@@ -1,0 +1,42 @@
+---
+slug: fault-code-p0500
+title: P0500 — Vehicle Speed Sensor Malfunction
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 4M41
+  - 6G75
+difficulty: moderate
+time_minutes: 30
+cost_min_eur: 40
+cost_max_eur: 120
+parts:
+  - {"name":"Vehicle speed sensor — 4M41 / 6G75","oem":"MB618423","spec":"Reed-switch or Hall-effect, M18×1.5 thread","notes":"Mounted on transmission output shaft. $40–120.","verify":true}
+last_reviewed: 2026-05-14
+related:
+  - check-engine-light
+  - transmission-slipping
+---
+
+P0500 indicates the ECU is not receiving a valid signal from the vehicle speed sensor (VSS). The VSS provides road speed data to the ECU, ABS module, and speedometer. Without it, the speedometer will read zero, ABS may activate unexpectedly, and the automatic transmission may not shift correctly. Usually caused by a failed sensor or damaged wiring.
+
+## Symptoms
+
+- Check Engine light illuminated
+- Speedometer reads zero at all times
+- Erratic speedometer behaviour (needle bouncing)
+- Automatic transmission staying in low gears or shifting erratically
+- ABS light or traction control light also illuminated
+- Idle speed higher than normal (ECU using air/fuel map that ignores vehicle speed)
+
+## Tips
+
+- The VSS is mounted in an exposed location under the vehicle and is prone to connector corrosion. Inspect the connector carefully before condemning the sensor.
+- If the ABS light is also on alongside P0500, the ABS wheel speed sensors may be providing the speed signal — check those as well.
+- A faulty VSS can cause the automatic transmission to hunt between gears at low speeds. This is often misdiagnosed as a transmission fault.
+- After replacement, a road test is essential to confirm the speedometer reads correctly and the code does not return.
+
+## Factory procedure reference
+
+- **Factory procedure — Speed Sensors (Section 35)** (M1, section 35)

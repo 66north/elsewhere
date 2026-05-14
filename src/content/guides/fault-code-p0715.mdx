@@ -1,0 +1,38 @@
+---
+slug: fault-code-p0715
+title: P0715 — Transmission Input / Turbine Speed Sensor Circuit
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 4M41
+  - 6G75
+difficulty: hard
+time_minutes: 45
+cost_min_eur: 60
+cost_max_eur: 150
+parts:
+  - {"name":"Transmission input speed sensor","oem":"MD758733","spec":"Magnetic pickup, M12 thread","notes":"Inside transmission — pan removal required. $60–150.","verify":true}
+  - {"name":"Transmission fluid — ATF SP-III","oem":null,"spec":"ATF SP-III (Mitsubishi Genuine or equivalent)","quantity":"3.0 L drain-and-refill","notes":"Replace whenever dropping the pan. Wrong fluid causes solenoid and sensor damage.","verify":false}
+last_reviewed: 2026-05-14
+related:
+  - fault-code-p0700
+  - transmission-slipping
+  - transmission-fluid
+---
+
+P0715 indicates the Transmission Control Module (TCM) is not receiving a valid signal from the input shaft (turbine) speed sensor inside the automatic transmission. This sensor measures how fast the torque converter turbine is spinning, which the TCM uses to calculate slip and control shift timing. A failed sensor causes erratic or harsh shifting and often triggers limp mode. Usually appears alongside P0700.
+
+## Symptoms
+
+- Check Engine light illuminated
+- Harsh, erratic, or delayed gear shifts
+- Transmission stuck in 3rd gear (limp mode)
+- P0700 (TCM fault) also stored
+- Speedometer may be unaffected (uses separate VSS)
+
+## Tips
+
+- Metal shavings on the sensor tip are a warning sign of internal transmission wear. Address the root cause or you will replace the sensor again soon.
+- Always replace the transmission fluid and filter when dropping the pan to access the sensor — the labour cost is already paid.
+- P0715 + P0720 (output speed sensor) together may indicate a wiring harness issue inside the pan rather than two failed sensors.

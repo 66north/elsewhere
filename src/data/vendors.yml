@@ -1,0 +1,39 @@
+# Vendor registry for affiliate links.
+# Each vendor has a search URL template with {oem} placeholder for part numbers.
+# Affiliate IDs can be injected directly here or in the affiliate.ts helper.
+
+vendors:
+  amazon:
+    name: Amazon
+    region: Global
+    color: '#FF9900'
+    searchUrl: 'https://www.amazon.co.uk/s?k={oem}'
+    # affiliate tag: ?tag=YOUR_TAG
+
+  autodoc:
+    name: AutoDoc
+    region: EU/Global
+    color: '#1C5FAB'
+    searchUrl: 'https://www.autodoc.co.uk/spares/?keywords={oem}'
+    # affiliate ID: &affid=YOUR_ID
+
+  ebay:
+    name: eBay
+    region: Global
+    color: '#E53238'
+    searchUrl: 'https://www.ebay.co.uk/sch/i.html?_nkw={oem}&LH_ItemCondition=3'
+    # affiliate ID: &campid=YOUR_ID&toolid=10001
+
+  megazip:
+    name: Megazip
+    region: JP/OEM
+    color: '#000000'
+    searchUrl: 'https://megazip.com/search?q={oem}'
+    # affiliate tracking: TBD
+
+  repco:
+    name: Repco
+    region: AU/NZ
+    color: '#E30613'
+    searchUrl: 'https://www.repco.com.au/search/{oem}'
+    # affiliate program: contact Repco

@@ -1,0 +1,44 @@
+---
+slug: fault-code-p0171
+title: P0171 — System Too Lean (Bank 1)
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 6G75
+difficulty: hard
+time_minutes: 60
+cost_min_eur: 10
+cost_max_eur: 400
+parts:
+  - {"name":"MAF sensor — 6G75 (MR985184)","oem":"MR985184","spec":"Hot-wire mass airflow sensor","notes":"Clean first with MAF spray before replacing. $200–400 OEM.","verify":true}
+  - {"name":"MAF sensor cleaner spray","oem":null,"spec":"CRC MAF Sensor Cleaner or equivalent","notes":"NOT carb cleaner. Spray only — do not wipe or touch the sensor wire. $10–20.","verify":false}
+last_reviewed: 2026-05-14
+related:
+  - fault-code-p0100
+  - rough-idle
+  - power-loss
+  - check-engine-light
+---
+
+P0171 means the ECU's long-term fuel trim is adding more than ~10% extra fuel to compensate for a lean air-fuel mixture. The engine is getting too much air or too little fuel relative to what the MAF sensor expects. Common causes include vacuum leaks (unmeasured air), a dirty MAF sensor, or a weak fuel pump. This is a petrol-only code — the 4M41 diesel does not use the same fuel trim system.
+
+## Symptoms
+
+- Check Engine light illuminated
+- Rough idle or hunting idle (RPM fluctuating)
+- Hesitation on acceleration from low RPM
+- Slightly poor fuel economy
+- Engine may stall at idle when A/C is switched on
+
+## Tips
+
+- Start with a vacuum leak check — they are free to diagnose and cheap to fix. A cracked PCV hose is the most commonly missed cause.
+- MAF sensor cleaning is a 10-minute job and worth trying before replacing the sensor.
+- Do NOT use carburettor cleaner on the MAF sensor — it damages the hot-wire element. Use only MAF-specific spray.
+- If P0171 appears alongside P0174 (Bank 2 lean), the cause is almost certainly a large vacuum leak or a bad MAF — both banks can't coincidentally run lean independently.
+- A code that appears only after hard acceleration may indicate a weak fuel pump unable to maintain pressure under demand.
+
+## Factory procedure reference
+
+- **Factory procedure — Engine Control (Section 80)** (M1, section 80)

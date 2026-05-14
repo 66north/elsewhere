@@ -1,0 +1,41 @@
+---
+slug: did-diagnostics-no-scan-tool
+title: Di-D Diesel — Reading Fault Codes Without a Scan Tool (Blink Code Method)
+category: codes
+gens:
+  - Gen 3
+  - Gen 4
+engines:
+  - 4M41
+difficulty: moderate
+time_minutes: 20
+last_reviewed: 2026-05-14
+related:
+  - check-engine-light
+  - dashboard-warning-lights
+  - fault-code-p0087
+  - power-loss
+  - rough-idle
+---
+
+The Mitsubishi Pajero 3.2 Di-D diesel has a built-in self-diagnostic system that can output fault codes through flashing dashboard warning lights — no scan tool, no MUT III, no laptop required. By grounding a single pin in the OBD connector, the ECU enters diagnostic mode and blinks out codes for the engine, automatic gearbox, transfer case, and ABS systems simultaneously through their respective warning lights. This method works for a preliminary diagnosis; a proper scan tool gives live data and more detail, but for a quick code read this procedure costs nothing.
+
+## Symptoms
+
+- Check Engine Light illuminated
+- ABS warning light on
+- Transfer case / 4WD warning light on
+- Automatic gearbox warning light on
+
+## Tools needed
+
+- Short piece of wire or paperclip to bridge OBD terminal No. 1 to ground
+- Pen and paper to record flash sequences
+
+## Tips
+
+- Take a video of the flashing lights on your phone — it is much easier to count flashes from a recording than in real time.
+- If the Check Engine Light does not flash at all (stays solid or off) after grounding the diagnostic pin, check your ground connection.
+- Code 12 appearing alone in the engine channel means no engine faults. Do not confuse it with Code 12 for the boost pressure sensor — they are the same number.
+- This procedure gives stored codes only — it does not give live sensor data. For intermittent faults, a proper OBD2 scan tool with Mitsubishi-specific support is needed.
+- Standard generic OBD2 readers often cannot read Mitsubishi-specific codes on the gearbox and transfer case — they only read generic SAE engine codes.

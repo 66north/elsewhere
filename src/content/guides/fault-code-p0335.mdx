@@ -1,0 +1,42 @@
+---
+slug: fault-code-p0335
+title: P0335 — Crankshaft Position Sensor Circuit Malfunction
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 4M41
+  - 6G75
+difficulty: hard
+time_minutes: 45
+cost_min_eur: 50
+cost_max_eur: 120
+parts:
+  - {"name":"Crankshaft position sensor — 4M41 / 6G75","oem":"MD328275","spec":"Hall-effect sensor, M6 mounting bolt","notes":"Compatible with both engines. Verify against VIN at dealer. $50–120.","verify":true}
+last_reviewed: 2026-05-14
+related:
+  - fault-code-p0340
+  - check-engine-light
+  - engine-wont-start
+---
+
+P0335 means the ECU is not receiving a valid signal from the crankshaft position sensor (CKP). The CKP tells the ECU the exact rotational position and speed of the crankshaft, which is essential for calculating ignition timing and fuel injection. Without it, the engine will not start or will stall immediately. This is a critical code — the vehicle will typically not run.
+
+## Symptoms
+
+- Engine cranks but will not start (most common)
+- Engine starts then immediately stalls
+- Check Engine light illuminated
+- No-start condition with no other obvious cause
+- Intermittent stalling at speed (sensor intermittently losing signal)
+
+## Tips
+
+- P0335 almost always means a no-start. If the engine is running and this code appears, it is likely intermittent — diagnose the wiring first.
+- The CKP sensor is a wear item on high-mileage vehicles. Replace it proactively if other sensors on the harness are showing age.
+- Wiring harness damage near the crankshaft pulley is common — the lower engine gets heat cycling and vibration that degrades insulation.
+- After replacement, clear the code and test-drive over 20 km including highway speeds before confirming the repair.
+
+## Factory procedure reference
+
+- **Factory procedure — Engine Control (Section 80)** (M1, section 80)

@@ -1,0 +1,43 @@
+---
+slug: fault-code-p0420
+title: P0420 — Catalyst System Efficiency Below Threshold (Bank 1)
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 6G75
+difficulty: hard
+time_minutes: 60
+cost_min_eur: 80
+cost_max_eur: 180
+parts:
+  - {"name":"Downstream O2 sensor — Bank 1 (after cat)","oem":"MQ604018","spec":"4-wire wideband lambda sensor","notes":"Check this before replacing the catalytic converter. $80–180.","verify":true}
+  - {"name":"Upstream O2 sensor — Bank 1 (before cat)","oem":"MQ604017","spec":"4-wire wideband lambda sensor","notes":"Upstream sensor — may need replacement if downstream test reveals upstream fault. $80–180.","verify":true}
+last_reviewed: 2026-05-14
+related:
+  - fault-code-p0300
+  - check-engine-light
+  - rough-idle
+---
+
+P0420 means the downstream oxygen sensor is reading an exhaust pattern too similar to the upstream sensor, indicating the catalytic converter is not converting pollutants efficiently. The catalytic converter typically lasts 150,000–200,000 km but degrades with oil burning, lead fuel, and severe misfires. Before replacing the expensive cat, confirm the oxygen sensors are not the cause of the false reading. This is a petrol-only code.
+
+## Symptoms
+
+- Check Engine light illuminated
+- No noticeable drivability symptoms in early stages
+- Slight sulphur (rotten egg) smell from exhaust
+- Failed emissions test
+- May appear alongside P0300 (misfire) codes which accelerate catalyst damage
+
+## Tips
+
+- Always replace the oxygen sensor before the catalytic converter — a $150 O2 sensor fix is much better than a $1200 cat.
+- P0420 after spark plug replacement or misfire repair is common — misfires send raw fuel into the cat, which can melt the ceramic substrate.
+- Aftermarket catalytic converters are significantly cheaper than OEM ($200–500 vs $800–1200), but may not last as long.
+- Engine oil leaking past valve stem seals or piston rings will destroy even a new catalytic converter. Fix the oil consumption first.
+- P0420 alone does not affect drivability — you can drive safely while diagnosing, but the vehicle will fail an emissions test.
+
+## Factory procedure reference
+
+- **Factory procedure — Emission Control (Section 14)** (M1, section 14)

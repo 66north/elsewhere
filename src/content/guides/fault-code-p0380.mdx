@@ -1,0 +1,44 @@
+---
+slug: fault-code-p0380
+title: P0380 — Glow Plug / Heater Circuit A Malfunction
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 4M41
+difficulty: moderate
+time_minutes: 30
+cost_min_eur: 12
+cost_max_eur: 80
+parts:
+  - {"name":"Glow plug — 4M41 diesel (MD319950)","oem":"MD319950","spec":"12V glow plug, M10×1.0 thread","quantity":"4 required","notes":"OEM part. Buy a set of 4. $15–30 each. NGK Y-508J and DENSO DG-114 are equivalent.","verify":false}
+  - {"name":"Glow plug — NGK Y-508J (equivalent)","oem":"Y-508J","spec":"12V, M10×1.0 thread","quantity":"4 required","notes":"NGK equivalent to MD319950. $12–25 each.","verify":false}
+  - {"name":"Glow plug relay","oem":"MR263239","spec":"12V relay, engine bay fuse box","notes":"Check this if all glow plugs test good. $30–80.","verify":true}
+last_reviewed: 2026-05-14
+related:
+  - glow-plugs
+  - engine-wont-start
+  - check-engine-light
+---
+
+P0380 indicates a fault in the glow plug pre-heat circuit on the 4M41 diesel engine. Glow plugs heat the combustion chamber to aid cold starting — without them, a diesel engine is very difficult to start below 5°C. The fault may be in the glow plug relay, the glow plug controller module, the wiring to the plugs, or one or more failed glow plugs. This is a diesel-only code.
+
+## Symptoms
+
+- Check Engine light illuminated
+- Difficult cold starting (especially below 5°C)
+- White smoke on startup (unburned diesel due to cold combustion)
+- Rough idle until engine warms up
+- Glow plug light on dashboard stays on longer than normal or does not illuminate
+
+## Tips
+
+- Replace all 4 glow plugs as a set even if only one has failed. The others are the same age and will follow shortly.
+- Glow plugs are prone to seizing in the cylinder head after years of heat cycling. Apply penetrating oil (WD-40 or Plus Gas) and let it soak for 30 minutes before removal.
+- If a glow plug snaps during removal, the remaining stub must be drilled and extracted — a workshop job.
+- The glow plug relay is often mounted in the engine bay fuse/relay box. It is cheap and worth replacing if you cannot identify which plug is failing.
+- Glow plugs do not affect warm starting — if the car starts fine when warm but struggles in cold mornings, P0380 is the likely culprit.
+
+## Factory procedure reference
+
+- **Factory procedure — Glow Plug System (Section 16)** (M1, section 16)

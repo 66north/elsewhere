@@ -1,0 +1,44 @@
+---
+slug: fault-code-p0340
+title: P0340 — Camshaft Position Sensor Circuit Malfunction
+category: codes
+gens:
+  - Gen 4
+engines:
+  - 4M41
+  - 6G75
+difficulty: hard
+time_minutes: 45
+cost_min_eur: 50
+cost_max_eur: 150
+parts:
+  - {"name":"Camshaft position sensor — 6G75 petrol","oem":"J5T23291","spec":"Hall-effect sensor, intake camshaft","notes":"6G75 has MIVEC on intake cam. Exhaust cam sensor part may differ. $60–150.","verify":true}
+  - {"name":"Camshaft position sensor — 4M41 diesel","oem":"MD327107","spec":"Hall-effect sensor","notes":"4M41 diesel CMP sensor. $50–120.","verify":true}
+last_reviewed: 2026-05-14
+related:
+  - fault-code-p0335
+  - timing-belt
+  - check-engine-light
+---
+
+P0340 indicates the ECU is not receiving a valid signal from the camshaft position sensor (CMP). The CMP tells the ECU the position of the camshaft relative to the crankshaft, enabling correct injection timing and variable valve timing (MIVEC on 6G75). A failed CMP sensor can cause hard starting, rough running, or a no-start condition. Unlike P0335 (crankshaft), the engine can sometimes run poorly with a failed camshaft sensor.
+
+## Symptoms
+
+- Check Engine light illuminated
+- Hard starting or extended cranking before start
+- Rough idle or fluctuating RPM
+- Reduced power and hesitation
+- Engine may start but run poorly
+- Fault codes for MIVEC/VVT system appearing alongside
+
+## Tips
+
+- P0340 + P0335 together is a red flag — suspect a jumped timing belt before replacing sensors.
+- The CMP sensor is often located near oil contamination zones on the cylinder head. Always inspect the connector for oil intrusion.
+- On the 6G75 with MIVEC, low oil level or old, degraded oil can trigger camshaft-related codes without the sensor itself being faulty. Check oil first.
+- After replacement, test-drive and monitor with scanner to confirm CAM signal is tracking correctly with CRK signal.
+
+## Factory procedure reference
+
+- **Factory procedure — Engine Control (Section 80)** (M1, section 80)

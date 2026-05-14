@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /elsewhere/
+
+Disallow: /elsewhere/.astro/
+Disallow: /elsewhere/dist/
+Disallow: /elsewhere/node_modules/
+
+Sitemap: https://66north.github.io/elsewhere/sitemap-index.xml

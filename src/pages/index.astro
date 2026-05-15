@@ -4,12 +4,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getDifficultyLabel } from '../lib/guide';
 import { path, site } from '../lib/site';
 
-// Get some featured guides (maintenance + troubleshooting mix)
+const FEATURED_SLUGS = ['oil-change', 'glow-plugs', 'timing-belt', 'overheating'];
 const guides = await getCollection('guides');
-const featured = guides
-  .filter(g => ['maintenance', 'troubleshoot'].includes(g.data.category || ''))
-  .sort(() => Math.random() - 0.5)
-  .slice(0, 4);
+const featured = FEATURED_SLUGS
+  .map(slug => guides.find(g => g.data.slug === slug))
+  .filter(Boolean);
 
 // Structured data schemas
 const organizationSchema = {

@@ -3,7 +3,6 @@ import { site, nav, path, type Section } from '../lib/site';
 import SearchBar from './SearchBar.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import VehiclePicker from './VehiclePicker.tsx';
-import Icon from './Icon.astro';
 
 interface Props {
   section?: Section;
@@ -45,9 +44,6 @@ const { section = 'home', showVehiclePicker = false, showSearch = true } = Astro
     <div class="header-tools">
       {showSearch && <SearchBar />}
       {showVehiclePicker && <VehiclePicker client:load />}
-      <a href={path('/bookmarks')} class="btn btn-ghost btn-icon" aria-label="Bookmarks">
-        <Icon name="bookmark" />
-      </a>
       <ThemeToggle />
     </div>
   </div>

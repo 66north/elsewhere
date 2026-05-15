@@ -1,6 +1,6 @@
 export const site = {
   name: 'Elsewhere',
-  tagline: 'A Pajero, the road, the manual',
+  tagline: 'A to Z, and everything between.',
   workshopSubtitle: 'Workshop · 66°N',
   description:
     'A personal site about a 2009 Mitsubishi Pajero, the trips it takes, and the workshop manuals that keep it running.',

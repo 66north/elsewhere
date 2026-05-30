@@ -6,47 +6,77 @@ import { path } from '../../../lib/site';
 
 const guides = await getCollection('guides');
 
-// Sort guides by title
 const sortedGuides = guides.sort((a, b) =>
   (a.data.title || '').localeCompare(b.data.title || '')
 );
 
-// Group by category
-const categories = Array.from(
-  new Map(
-    sortedGuides.map((guide) => [
-      guide.data.category || 'other',
-      (guides_by_cat) => guides_by_cat || [],
-    ])
-  ).entries()
-);
-
-const guidesById = new Map(sortedGuides.map((g) => [g.data.category || 'other', []]));
+const guidesById = new Map<string, typeof sortedGuides>();
 sortedGuides.forEach((guide) => {
   const cat = guide.data.category || 'other';
-  if (!guidesById.has(cat)) {
-    guidesById.set(cat, []);
-  }
+  if (!guidesById.has(cat)) guidesById.set(cat, []);
   guidesById.get(cat)!.push(guide);
 });
 
-const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.localeCompare(b));
+const categoryOrder = ['maintenance', 'troubleshoot', 'codes', 'reference', 'specs', 'parts'];
+const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => {
+  const ai = categoryOrder.indexOf(a);
+  const bi = categoryOrder.indexOf(b);
+  if (ai !== -1 && bi !== -1) return ai - bi;
+  if (ai !== -1) return -1;
+  if (bi !== -1) return 1;
+  return a.localeCompare(b);
+});
+
+const categoryLabels: Record<string, string> = {
+  maintenance: 'Maintenance',
+  troubleshoot: 'Troubleshooting',
+  codes: 'Fault Codes',
+  reference: 'Reference',
+  specs: 'Specifications',
+  parts: 'Parts',
+};
+
+const allGens = ['Gen 2', 'Gen 3', 'Gen 4'];
 ---
 
-<BaseLayout title="Guides" description="Workshop guides for Mitsubishi Pajero" section="workshop">
+<BaseLayout title="Workshop Guides" description="Workshop guides for Mitsubishi Pajero — maintenance, troubleshooting, fault codes, and specifications." section="workshop">
   <div class="guides-page">
     <header class="page-header">
       <h1>Workshop Guides</h1>
-      <p class="eyebrow">{guides.length} comprehensive guides for Pajero repair and maintenance</p>
+      <p class="eyebrow">{guides.length} guides for Pajero repair and maintenance</p>
     </header>
 
+    <div class="filters-bar">
+      <div class="filter-group">
+        <span class="filter-label">Generation</span>
+        <div class="chips" id="gen-chips">
+          <button class="chip chip-active" data-gen="" type="button">All</button>
+          {allGens.map((gen) => (
+            <button class="chip" data-gen={gen} type="button">{gen}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div id="guide-count-notice" class="count-notice" hidden>
+      <span id="guide-count-text"></span>
+      <button class="clear-filter" id="clear-gen" type="button">Clear filter</button>
+    </div>
+
     {categoryList.map(([category, categoryGuides]) => (
-      <section class="category-section">
-        <h2 class="category-title">{category.charAt(0).toUpperCase() + category.slice(1)}</h2>
+      <section class="category-section" id={`cat-${category}`} data-category={category}>
+        <h2 class="category-title">
+          {categoryLabels[category] ?? (category.charAt(0).toUpperCase() + category.slice(1))}
+          <span class="cat-count" data-cat={category}>{categoryGuides.length}</span>
+        </h2>
 
         <div class="guides-grid">
           {categoryGuides.map((guide) => (
-            <a href={path(`/workshop/guides/${guide.data.slug}`)} class="guide-card">
+            <a
+              href={path(`/workshop/guides/${guide.data.slug}`)}
+              class="guide-card"
+              data-gens={JSON.stringify(guide.data.gens ?? [])}
+            >
               <div class="guide-card-header">
                 <h3>{guide.data.title}</h3>
                 {guide.data.difficulty && (
@@ -62,6 +92,13 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
                 )}
                 {guide.data.time_minutes && (
                   <span class="meta-tag">{guide.data.time_minutes}m</span>
+                )}
+                {guide.data.cost_min_eur != null && guide.data.cost_max_eur != null && (
+                  <span class="meta-tag meta-cost">
+                    ~€{guide.data.cost_min_eur === guide.data.cost_max_eur
+                      ? guide.data.cost_min_eur
+                      : `${guide.data.cost_min_eur}–${guide.data.cost_max_eur}`}
+                  </span>
                 )}
               </div>
             </a>
@@ -79,7 +116,7 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
     }
 
     .page-header {
-      margin-bottom: 48px;
+      margin-bottom: 32px;
       text-align: center;
     }
 
@@ -94,11 +131,100 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
       font-size: 16px;
     }
 
-    .category-section {
-      margin-bottom: 48px;
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
     }
 
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      white-space: nowrap;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-elev);
+      color: var(--fg-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      font-family: inherit;
+    }
+
+    .chip:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+      color: var(--fg);
+    }
+
+    .chip-active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .chip-active:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      opacity: 0.9;
+    }
+
+    .count-notice {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0 16px;
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+
+    .clear-filter {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: underline;
+    }
+
+    .category-section {
+      margin-bottom: 48px;
+      scroll-margin-top: 80px;
+    }
+
+    .category-section[hidden] { display: none; }
+
     .category-title {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
       font-size: 18px;
       font-weight: 600;
       text-transform: uppercase;
@@ -107,6 +233,22 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
       margin-bottom: 20px;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--border);
+    }
+
+    .cat-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 4px;
+      background: var(--bg-sunken);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      letter-spacing: 0;
     }
 
     .guides-grid {
@@ -131,6 +273,13 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
       border-color: var(--border-strong);
     }
 
+    .guide-card[hidden] { display: none; }
+
+    .guide-card.is-dimmed {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
     .guide-card-header {
       display: flex;
       align-items: flex-start;
@@ -141,7 +290,7 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
 
     .guide-card-header h3 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--fg);
       flex: 1;
@@ -150,9 +299,9 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
     .difficulty-badge {
       display: inline-flex;
       align-items: center;
-      padding: 4px 8px;
+      padding: 3px 7px;
       border-radius: 3px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -178,16 +327,20 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
     .guide-card-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
 
     .meta-tag {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 3px 7px;
       background: var(--bg-sunken);
       border-radius: 3px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--fg-muted);
+    }
+
+    .meta-cost {
+      color: var(--fg-soft);
     }
 
     @media (max-width: 640px) {
@@ -196,4 +349,88 @@ const categoryList = Array.from(guidesById.entries()).sort(([a], [b]) => a.local
       }
     }
   </style>
+
+  <script>
+    function applyGenFilter(gen: string) {
+      const chips = document.querySelectorAll<HTMLButtonElement>('#gen-chips .chip');
+      chips.forEach((c) => c.classList.toggle('chip-active', c.dataset.gen === gen));
+
+      const cards = document.querySelectorAll<HTMLElement>('.guide-card');
+      let total = 0;
+
+      cards.forEach((card) => {
+        if (!gen) {
+          card.hidden = false;
+          total++;
+          return;
+        }
+        const gens: string[] = JSON.parse(card.dataset.gens || '[]');
+        const match = gens.length === 0 || gens.includes(gen);
+        card.hidden = !match;
+        if (match) total++;
+      });
+
+      // Hide sections that have no visible cards
+      const sections = document.querySelectorAll<HTMLElement>('.category-section');
+      sections.forEach((section) => {
+        const visible = section.querySelectorAll<HTMLElement>('.guide-card:not([hidden])').length;
+        section.hidden = visible === 0;
+        const countEl = section.querySelector<HTMLElement>('.cat-count');
+        if (countEl) countEl.textContent = String(visible);
+      });
+
+      // Update notice
+      const notice = document.getElementById('guide-count-notice');
+      const countText = document.getElementById('guide-count-text');
+      if (notice && countText) {
+        notice.hidden = !gen;
+        const fromGarage = !new URLSearchParams(window.location.search).get('gen') && !!gen;
+        const label = fromGarage ? `${total} guide${total !== 1 ? 's' : ''} for your ${gen}` : `${total} guide${total !== 1 ? 's' : ''} for ${gen}`;
+        countText.textContent = label;
+      }
+
+      // Update URL without navigation
+      const url = new URL(window.location.href);
+      if (gen) url.searchParams.set('gen', gen);
+      else url.searchParams.delete('gen');
+      window.history.replaceState(null, '', url.toString());
+
+      // Dispatch event so other components (e.g. My Garage) can listen
+      window.dispatchEvent(new CustomEvent('elsewhere.gen.change', { detail: gen }));
+    }
+
+    // Wire chip clicks
+    document.querySelectorAll<HTMLButtonElement>('#gen-chips .chip').forEach((chip) => {
+      chip.addEventListener('click', () => applyGenFilter(chip.dataset.gen ?? ''));
+    });
+
+    document.getElementById('clear-gen')?.addEventListener('click', () => applyGenFilter(''));
+
+    // Apply from URL, or fall back to saved garage gen
+    const urlGen = new URLSearchParams(window.location.search).get('gen');
+    let initialGen = urlGen ?? '';
+    if (!initialGen) {
+      try {
+        const garage = JSON.parse(localStorage.getItem('elsewhere.garage') || 'null');
+        if (garage?.gen) initialGen = garage.gen;
+      } catch (_) {}
+    }
+    applyGenFilter(initialGen);
+
+    // Re-apply if garage changes (user updates My Garage from another page)
+    window.addEventListener('elsewhere.garage.change', (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      // Only auto-apply if no explicit URL param — don't override user's manual choice
+      if (!new URLSearchParams(window.location.search).get('gen')) {
+        applyGenFilter(detail?.gen ?? '');
+      }
+    });
+
+    // Scroll to category anchor if hash present
+    const hash = window.location.hash;
+    if (hash) {
+      const target = document.querySelector<HTMLElement>(hash);
+      if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
+  </script>
 </BaseLayout>

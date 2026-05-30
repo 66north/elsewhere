@@ -48,6 +48,55 @@ const avgTime = Math.round(
   guides.reduce((sum, g) => sum + (g.data.time_minutes || 0), 0) / guides.length
 );
 
+// Fault code guides for the lookup box
+const codeGuides = guides
+  .filter((g) => g.data.category === 'codes' && /^fault-code-p/.test(g.data.slug))
+  .map((g) => ({ slug: g.data.slug, code: g.data.slug.replace('fault-code-', '').toUpperCase(), title: g.data.title }))
+  .sort((a, b) => a.code.localeCompare(b.code));
+
+// Symptom buckets: map top-level symptoms to guide slugs
+const symptomBuckets = [
+  {
+    icon: '🔊',
+    label: 'Noise',
+    hint: 'Squealing, grinding, knocking, clunking',
+    slugs: ['brake-pads-front', 'brake-noise-and-feel', 'suspension-squeaks-and-clunks', 'cv-joint-driveshaft', 'rear-axle-bearing-inspection'],
+  },
+  {
+    icon: '💡',
+    label: 'Warning light',
+    hint: 'Dashboard lights, MIL, DPF, 4WD',
+    slugs: ['dashboard-warning-lights', 'dpf-warning-light', 'fault-code-p0400', 'fault-code-p2002', 'fault-code-p0700'],
+  },
+  {
+    icon: '🔑',
+    label: "Won't start",
+    hint: "No crank, slow crank, starts then dies",
+    slugs: ['engine-wont-start', 'starting-charging-problems', 'battery-replacement', 'glow-plugs', '4m40-glow-plugs'],
+  },
+  {
+    icon: '💧',
+    label: 'Leaking',
+    hint: 'Oil, coolant, transmission fluid',
+    slugs: ['engine-oil-specifications', 'coolant-flush', 'radiator-hose-replacement', 'v5awf-atf-check', 'power-steering-problems'],
+  },
+  {
+    icon: '📳',
+    label: 'Vibration / rough',
+    hint: 'Rough idle, misfire, shaking',
+    slugs: ['rough-idle', 'fault-code-p0300', 'cv-joint-driveshaft', 'tire-pressure-and-wear', 'suspension-squeaks-and-clunks'],
+  },
+  {
+    icon: '🚗',
+    label: '4WD issue',
+    hint: "Won't engage, stuck, indicator flashing",
+    slugs: ['4wd-not-engaging', 'rear-differential-lock-system', 'transmission-fluid', 'manual-transmission-problems'],
+  },
+];
+
+// Build title map for symptom guide slugs
+const titleMap = new Map(guides.map((g) => [g.data.slug, g.data.title]));
+
 // Breadcrumb schema
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -116,12 +165,87 @@ const collectionSchema = {
       </div>
     </section>
 
+    <!-- Quick-access banners -->
+    <section class="quick-banners">
+      <div class="banner-row">
+        <div class="quick-banner">
+          <div>
+            <span class="buying-label">What's due on your car?</span>
+            <p class="buying-desc">Enter your mileage to see which service items are overdue or coming up.</p>
+          </div>
+          <a href={path('/workshop/maintenance')} class="buying-link">Maintenance tracker →</a>
+        </div>
+        <div class="quick-banner">
+          <div>
+            <span class="buying-label">Looking to buy a Pajero?</span>
+            <p class="buying-desc">Pre-purchase inspection checklist, known weak points, and what to budget.</p>
+          </div>
+          <a href={path('/workshop/buying')} class="buying-link">Buyer's guide →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- What's wrong? — symptom-first entry -->
+    <section class="symptom-section">
+      <h2 class="section-title">What's wrong?</h2>
+      <p class="section-intro">Not sure what to search for? Start here — pick the symptom that fits best.</p>
+      <div class="symptom-grid">
+        {symptomBuckets.map((bucket) => (
+          <div class="symptom-card">
+            <div class="symptom-header">
+              <span class="symptom-icon">{bucket.icon}</span>
+              <div>
+                <span class="symptom-label">{bucket.label}</span>
+                <span class="symptom-hint">{bucket.hint}</span>
+              </div>
+            </div>
+            <ul class="symptom-guides">
+              {bucket.slugs.slice(0, 4).map((slug) => titleMap.has(slug) && (
+                <li>
+                  <a href={path(`/workshop/guides/${slug}`)} class="symptom-guide-link">
+                    {titleMap.get(slug)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Fault code lookup -->
+    <section class="code-lookup-section">
+      <h2 class="section-title">Fault code lookup</h2>
+      <p class="section-intro">Got a warning light? Enter your P-code to jump straight to the diagnosis guide.</p>
+      <div class="code-lookup">
+        <div class="code-input-wrap">
+          <input
+            type="text"
+            id="code-input"
+            class="code-input"
+            placeholder="e.g. P0400"
+            maxlength="6"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="code-go-btn" id="code-go" type="button">Go</button>
+        </div>
+        <div class="code-quick-list">
+          {codeGuides.slice(0, 8).map((g) => (
+            <a href={path(`/workshop/guides/${g.slug}`)} class="code-chip" data-code={g.code}>
+              {g.code}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
     <!-- Category grid -->
     <section class="categories-section">
       <h2 class="section-title">Browse by category</h2>
       <div class="categories-grid">
         {categories.map((cat) => (
-          <a href={path('/workshop/guides')} class="category-card">
+          <a href={path(`/workshop/guides#cat-${cat.name}`)} class="category-card">
             <div class="category-header">
               <h3>{cat.name}</h3>
               <span class="guide-count">{cat.count}</span>
@@ -162,15 +286,14 @@ const collectionSchema = {
       </div>
     </section>
 
-    <!-- Quick filters (placeholder) -->
+    <!-- Generation quick filter -->
     <section class="filters-section">
-      <h2 class="section-title">Filter by</h2>
+      <h2 class="section-title">Filter by generation</h2>
       <div class="filter-chips">
-        <button class="chip chip-active" type="button">All guides</button>
-        <button class="chip" type="button">Gen 2</button>
-        <button class="chip" type="button">Gen 3</button>
-        <button class="chip" type="button">Gen 4</button>
-        <button class="chip" type="button">Gen 5</button>
+        <a href={path('/workshop/guides')} class="chip chip-active">All guides</a>
+        <a href={path('/workshop/guides?gen=Gen+2')} class="chip">Gen 2 (1990–1999)</a>
+        <a href={path('/workshop/guides?gen=Gen+3')} class="chip">Gen 3 (1999–2006)</a>
+        <a href={path('/workshop/guides?gen=Gen+4')} class="chip">Gen 4 (2006–2015)</a>
       </div>
     </section>
   </div>
@@ -418,6 +541,224 @@ const collectionSchema = {
       border-color: var(--accent);
     }
 
+    /* ── Quick banners ── */
+    .quick-banners {
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .banner-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .quick-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+    }
+
+    @media (max-width: 640px) {
+      .banner-row { grid-template-columns: 1fr; }
+    }
+
+    .buying-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--fg);
+      margin-bottom: 4px;
+    }
+
+    .buying-desc {
+      font-size: 13px;
+      color: var(--fg-muted);
+      margin: 0;
+    }
+
+    .buying-link {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .buying-link:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* ── Symptom section ── */
+    .symptom-section {
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-intro {
+      font-size: 15px;
+      color: var(--fg-muted);
+      margin-bottom: 24px;
+      margin-top: -8px;
+    }
+
+    .symptom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .symptom-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+    }
+
+    .symptom-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .symptom-icon {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .symptom-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 2px;
+    }
+
+    .symptom-hint {
+      display: block;
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+
+    .symptom-guides {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .symptom-guide-link {
+      display: block;
+      font-size: 13px;
+      color: var(--fg-soft);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border);
+      transition: color 0.12s;
+    }
+
+    .symptom-guide-link:last-child {
+      border-bottom: none;
+    }
+
+    .symptom-guide-link:hover {
+      color: var(--accent);
+    }
+
+    /* ── Code lookup section ── */
+    .code-lookup-section {
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .code-lookup {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .code-input-wrap {
+      display: flex;
+      gap: 8px;
+      max-width: 320px;
+    }
+
+    .code-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-sunken);
+      color: var(--fg);
+      font-size: 16px;
+      font-family: 'Geist Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .code-go-btn {
+      padding: 10px 20px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.12s;
+    }
+
+    .code-go-btn:hover {
+      opacity: 0.85;
+    }
+
+    .code-quick-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .code-chip {
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-elev);
+      color: var(--fg-muted);
+      font-size: 12px;
+      font-family: 'Geist Mono', monospace;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+
+    .code-chip:hover {
+      background: var(--bg-sunken);
+      color: var(--fg);
+      border-color: var(--border-strong);
+    }
+
     @media (max-width: 640px) {
       .hero {
         padding: 60px 0 48px;
@@ -432,9 +773,38 @@ const collectionSchema = {
         gap: 20px;
       }
 
-      .categories-grid {
+      .categories-grid,
+      .symptom-grid {
         grid-template-columns: 1fr;
+      }
+
+      .code-input-wrap {
+        max-width: 100%;
       }
     }
   </style>
+
+  <script define:vars={{ codeMap: Object.fromEntries(codeGuides.map((g) => [g.code, g.slug])) }}>
+    const input = document.getElementById('code-input');
+    const goBtn = document.getElementById('code-go');
+    const base = '/elsewhere/workshop/guides/';
+
+    function navigate() {
+      const code = input?.value.trim().toUpperCase().replace(/\s/g, '');
+      if (!code) return;
+      const slug = codeMap[code] ?? `fault-code-${code.toLowerCase()}`;
+      window.location.href = base + slug;
+    }
+
+    goBtn?.addEventListener('click', navigate);
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') navigate();
+    });
+
+    input?.addEventListener('input', () => {
+      const pos = input.selectionStart;
+      input.value = input.value.toUpperCase();
+      input.setSelectionRange(pos, pos);
+    });
+  </script>
 </BaseLayout>

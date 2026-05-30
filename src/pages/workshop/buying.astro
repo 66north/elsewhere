@@ -1,0 +1,530 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { path } from '../../lib/site';
+
+const engines = [
+  {
+    id: '4M40',
+    name: '4M40 Diesel',
+    gens: 'Gen 2 (1990–1999)',
+    description: '2.5L naturally-aspirated or turbocharged diesel. Older, simpler, bulletproof when maintained. Parts widely available.',
+    knownIssues: [
+      { label: 'Injection pump top seal leak', slug: '4m40-injection-pump-seal-fix', severity: 'medium', note: 'DIY-fixable. Oil seeps from governor cover — messy but not terminal.' },
+      { label: 'Glow plug failure (cold starts)', slug: '4m40-glow-plugs', severity: 'low', note: 'Common at high mileage. Hard starting in winter is the symptom.' },
+      { label: 'Timing chain stretch (high km)', slug: null, severity: 'high', note: 'Check for timing chain rattle on cold start. Expensive if neglected.' },
+    ],
+    budget: { service: '€200–400/yr', watchlist: '€500–1500' },
+  },
+  {
+    id: '4M41',
+    name: '4M41 Di-D Diesel',
+    gens: 'Gen 3 & Gen 4 (1999–2015)',
+    description: '3.2L common-rail turbodiesel. Strong, economical, but emissions hardware adds complexity at high mileage.',
+    knownIssues: [
+      { label: 'EGR & intake carbon buildup', slug: 'egr-valve-cleaning', severity: 'medium', note: 'Universal at 100,000+ km on unserviced cars. Causes rough idle and black smoke.' },
+      { label: 'Timing belt (not chain)', slug: 'timing-belt', severity: 'high', note: 'Factory interval 90,000 km. A snapped belt destroys the engine. Verify history.' },
+      { label: 'Timing chain tensioner (late 4M41)', slug: '4m41-timing-chain-tensioner', severity: 'high', note: 'Rattle on cold start = worn tensioner. Catch early.' },
+      { label: 'DPF regeneration issues (post-2007)', slug: 'dpf-warning-light', severity: 'medium', note: 'Mainly affects city-driven examples. Forced regeneration or removal needed.' },
+      { label: 'Valve clearance (every 100k km)', slug: '4m41-valve-clearance', severity: 'low', note: 'Cheap to check, expensive if ignored for too long.' },
+    ],
+    budget: { service: '€300–600/yr', watchlist: '€800–2500' },
+  },
+  {
+    id: '6G72',
+    name: '6G72 Petrol V6',
+    gens: 'Gen 2 (1990–1999)',
+    description: '3.0L petrol V6. Smooth and powerful. Timing belt is the critical maintenance item.',
+    knownIssues: [
+      { label: 'Timing belt', slug: 'v6-timing-belt', severity: 'high', note: 'Interference engine. Non-negotiable: check replacement history before buying.' },
+      { label: 'Lifter tick on cold start', slug: null, severity: 'low', note: 'Common at high mileage. Usually quietens after warm-up — monitor, not urgent.' },
+    ],
+    budget: { service: '€250–450/yr', watchlist: '€400–1200' },
+  },
+  {
+    id: '6G75',
+    name: '6G75 Petrol V6',
+    gens: 'Gen 4 (2006–2015)',
+    description: '3.8L MIVEC petrol V6. Smooth, powerful, mechanically reliable. Fuel economy is its main weakness.',
+    knownIssues: [
+      { label: 'Timing belt (every 90,000 km)', slug: 'v6-timing-belt', severity: 'high', note: 'Interference engine. Factor in belt replacement if history unknown.' },
+      { label: 'Crankshaft pulley delamination', slug: null, severity: 'high', note: 'Rubber ring separates from the pulley. Throws belts and kills alternator/AC.' },
+      { label: 'Lifter tick on cold start', slug: null, severity: 'low', note: 'Noise usually disappears at operating temp. Not typically a reliability risk.' },
+      { label: 'Spark plugs at 80,000 km', slug: 'spark-plugs', severity: 'low', note: 'OEM iridium plugs are expensive. Budget if history unknown.' },
+    ],
+    budget: { service: '€350–550/yr', watchlist: '€600–1800' },
+  },
+];
+
+const severityLabel: Record<string, string> = { low: 'Watch', medium: 'Budget', high: 'Critical' };
+---
+
+<BaseLayout
+  title="Buying a Pajero"
+  description="A practical guide to buying a used Mitsubishi Pajero — what to check, known weak points by engine, and what to budget."
+  section="workshop"
+>
+  <div class="buying-page">
+
+    <header class="buying-hero">
+      <div class="eyebrow">Workshop · Buyer's guide</div>
+      <h1>Buying a Pajero</h1>
+      <p class="lede">
+        The Pajero is a capable, long-lived 4WD — but like any high-mileage vehicle, specific failure points separate a bargain from a money pit. This page gets you ready to inspect one before you buy.
+      </p>
+    </header>
+
+    <!-- Step 1: Inspection checklist -->
+    <section class="step-section">
+      <div class="step-number">01</div>
+      <div class="step-content">
+        <h2>Do the pre-purchase inspection</h2>
+        <p>
+          Before you look at anything else, walk through the full inspection checklist. It covers every known Pajero weak point — engine, transmission, 4WD, suspension, brakes, rust, and electronics — with pass/fail criteria. Takes about 60 minutes with the owner present.
+        </p>
+        <a href={path('/workshop/guides/pre-purchase-inspection')} class="cta-link">
+          Pre-Purchase Inspection Checklist →
+        </a>
+        <div class="step-tip">
+          <strong>Tip:</strong> Open the checklist on your phone before you go. Work through each section at the car — don't try to remember it.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Know your engine -->
+    <section class="step-section">
+      <div class="step-number">02</div>
+      <div class="step-content">
+        <h2>Know which engine you're looking at</h2>
+        <p>
+          The Pajero ran several very different engines across the generations. The diesel and petrol options have different service intervals, different failure modes, and different ownership costs. Identify yours before you commit.
+        </p>
+        <a href={path('/workshop/guides/pajero-engine-guide')} class="cta-link">
+          Pajero Engine Guide — Which Engine Is In My Vehicle? →
+        </a>
+      </div>
+    </section>
+
+    <!-- Step 3: Known issues by engine -->
+    <section class="issues-section">
+      <h2 class="section-title">Known weak points by engine</h2>
+      <p class="section-intro">
+        These are the issues that come up repeatedly on forums, in workshop records, and in the inspection checklist. None of them disqualify a car outright — but they should inform the price you pay.
+      </p>
+
+      <div class="engines-grid">
+        {engines.map((engine) => (
+          <div class="engine-card">
+            <div class="engine-header">
+              <div>
+                <span class="engine-id">{engine.id}</span>
+                <span class="engine-name">{engine.name}</span>
+              </div>
+              <span class="engine-gens">{engine.gens}</span>
+            </div>
+            <p class="engine-desc">{engine.description}</p>
+
+            <ul class="issues-list">
+              {engine.knownIssues.map((issue) => (
+                <li class="issue-item">
+                  <div class="issue-row">
+                    <span class={`severity-badge sev-${issue.severity}`}>{severityLabel[issue.severity]}</span>
+                    {issue.slug ? (
+                      <a href={path(`/workshop/guides/${issue.slug}`)} class="issue-title">{issue.label}</a>
+                    ) : (
+                      <span class="issue-title">{issue.label}</span>
+                    )}
+                  </div>
+                  <p class="issue-note">{issue.note}</p>
+                </li>
+              ))}
+            </ul>
+
+            <div class="engine-budget">
+              <div class="budget-item">
+                <span class="budget-label">Typical annual service</span>
+                <span class="budget-value">{engine.budget.service}</span>
+              </div>
+              <div class="budget-item">
+                <span class="budget-label">First-year watchlist budget</span>
+                <span class="budget-value">{engine.budget.watchlist}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Step 4: Takata recall callout -->
+    <section class="recall-section">
+      <div class="recall-inner">
+        <span class="recall-icon">⚠️</span>
+        <div>
+          <strong>Takata airbag recall (NS/NT/NW/NX models)</strong>
+          <p>Pajero IV models were subject to a mandatory Takata airbag inflator recall. Before purchasing, verify the recall has been completed using your country's VIN check system. Do not buy a vehicle with an outstanding airbag recall — parts may no longer be available, and the inflator is a documented safety risk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5: After you buy -->
+    <section class="after-section">
+      <h2 class="section-title">After you buy</h2>
+      <div class="after-links">
+        <a href={path('/workshop/guides/maintenance-schedule')} class="after-card">
+          <span class="after-title">Maintenance Schedule</span>
+          <span class="after-desc">Full service intervals for Gen 2–4. Start here to know what's due.</span>
+        </a>
+        <a href={path('/workshop/guides/fluid-capacities')} class="after-card">
+          <span class="after-title">Fluid Capacities</span>
+          <span class="after-desc">Oil, coolant, ATF, diffs, transfer case — all quantities in one place.</span>
+        </a>
+        <a href={path('/workshop/guides/dashboard-warning-lights')} class="after-card">
+          <span class="after-title">Dashboard Warning Lights</span>
+          <span class="after-desc">What every light means and what to do about it.</span>
+        </a>
+        <a href={path('/workshop/guides/4wd-not-engaging')} class="after-card">
+          <span class="after-title">4WD System Guide</span>
+          <span class="after-desc">How the Super Select 4WD system works and how to use it correctly.</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <style>
+    .buying-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-page) 80px;
+    }
+
+    .buying-hero {
+      padding: 72px 0 56px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 64px;
+    }
+
+    .buying-hero .eyebrow {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+
+    .buying-hero h1 {
+      font-size: 40px;
+      margin: 0 0 20px;
+      color: var(--fg);
+    }
+
+    .lede {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    /* Steps */
+    .step-section {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+
+    .step-number {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      color: var(--border-strong);
+      padding-top: 4px;
+    }
+
+    .step-content h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      color: var(--fg);
+    }
+
+    .step-content p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+
+    .cta-link {
+      display: inline-block;
+      padding: 10px 18px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      margin-bottom: 16px;
+    }
+
+    .cta-link:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .step-tip {
+      font-size: 13px;
+      color: var(--fg-muted);
+      padding: 10px 14px;
+      background: var(--bg-sunken);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    /* Known issues */
+    .issues-section {
+      margin-bottom: 64px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-soft);
+      margin-bottom: 8px;
+    }
+
+    .section-intro {
+      font-size: 15px;
+      color: var(--fg-muted);
+      margin-bottom: 28px;
+    }
+
+    .engines-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .engine-card {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+    }
+
+    .engine-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .engine-id {
+      display: inline-block;
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 8px;
+    }
+
+    .engine-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .engine-gens {
+      font-size: 12px;
+      color: var(--fg-muted);
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+
+    .engine-desc {
+      font-size: 14px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .issues-list {
+      list-style: none;
+      margin: 0 0 20px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .issue-item {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .issue-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .issue-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .severity-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .sev-low { background: oklch(0.85 0.12 150); color: oklch(0.35 0.1 150); }
+    .sev-medium { background: oklch(0.82 0.12 70); color: oklch(0.4 0.1 70); }
+    .sev-high { background: oklch(0.8 0.12 10); color: oklch(0.35 0.1 10); }
+
+    .issue-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    a.issue-title:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .issue-note {
+      font-size: 13px;
+      color: var(--fg-muted);
+      margin: 0;
+      line-height: 1.5;
+      padding-left: calc(10px + 6px + 8px + 2px); /* badge width approx */
+    }
+
+    .engine-budget {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .budget-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .budget-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--fg-muted);
+      font-weight: 500;
+    }
+
+    .budget-value {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      color: var(--fg);
+    }
+
+    /* Recall callout */
+    .recall-section {
+      margin-bottom: 64px;
+    }
+
+    .recall-inner {
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      border: 1px solid oklch(0.8 0.12 70);
+      border-radius: var(--radius-sm);
+      background: oklch(0.97 0.04 70);
+    }
+
+    .recall-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .recall-inner strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: oklch(0.4 0.1 70);
+    }
+
+    .recall-inner p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: oklch(0.4 0.1 70);
+      margin: 0;
+    }
+
+    /* After you buy */
+    .after-section {
+      margin-bottom: 0;
+    }
+
+    .after-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .after-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elev);
+      text-decoration: none;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .after-card:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+    }
+
+    .after-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .after-desc {
+      font-size: 12px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      .buying-hero h1 { font-size: 32px; }
+      .step-section { grid-template-columns: 1fr; gap: 8px; }
+      .step-number { font-size: 14px; }
+      .engine-header { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</BaseLayout>

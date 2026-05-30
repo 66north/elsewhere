@@ -4,6 +4,7 @@ interface Guide {
   slug: string;
   title: string;
   category: string;
+  symptoms?: string[];
 }
 
 interface Command {
@@ -11,7 +12,7 @@ interface Command {
   title: string;
   category: string;
   action: () => void;
-  icon?: string;
+  matchedSymptom?: string;
 }
 
 export default function CommandPalette({ guides }: { guides: Guide[] }) {
@@ -20,37 +21,62 @@ export default function CommandPalette({ guides }: { guides: Guide[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Build command list from guides
-  const commands: Command[] = [
-    // Navigation
+  const navCommands: Command[] = [
     { id: 'nav-home', title: 'Home', category: 'Navigation', action: () => navigate('/elsewhere') },
-    {
-      id: 'nav-workshop',
-      title: 'Workshop',
-      category: 'Navigation',
-      action: () => navigate('/elsewhere/workshop'),
-    },
+    { id: 'nav-workshop', title: 'Workshop', category: 'Navigation', action: () => navigate('/elsewhere/workshop') },
     { id: 'nav-journal', title: 'Journal', category: 'Navigation', action: () => navigate('/elsewhere/journal') },
     { id: 'nav-build', title: 'The Build', category: 'Navigation', action: () => navigate('/elsewhere/build') },
     { id: 'nav-about', title: 'About', category: 'Navigation', action: () => navigate('/elsewhere/about') },
-
-    // Guides
-    ...guides.map((guide) => ({
-      id: `guide-${guide.slug}`,
-      title: guide.title,
-      category: guide.category,
-      action: () => navigate(`/elsewhere/workshop/guides/${guide.slug}`),
-    })),
   ];
 
-  // Filter commands based on query
-  const filtered = query
-    ? commands.filter(
-        (cmd) =>
-          cmd.title.toLowerCase().includes(query.toLowerCase()) ||
-          cmd.category.toLowerCase().includes(query.toLowerCase())
-      )
-    : commands.slice(0, 8); // Show first 8 when empty
+  // Filter commands based on query — title/category match OR symptom match
+  const filtered: Command[] = query
+    ? (() => {
+        const q = query.toLowerCase();
+        const results: Command[] = [];
+
+        // Nav first
+        navCommands.forEach((cmd) => {
+          if (cmd.title.toLowerCase().includes(q)) results.push(cmd);
+        });
+
+        // Guides — title/category match (higher priority)
+        const titleMatches = new Set<string>();
+        guides.forEach((guide) => {
+          if (guide.title.toLowerCase().includes(q) || guide.category.toLowerCase().includes(q)) {
+            titleMatches.add(guide.slug);
+            results.push({
+              id: `guide-${guide.slug}`,
+              title: guide.title,
+              category: guide.category,
+              action: () => navigate(`/elsewhere/workshop/guides/${guide.slug}`),
+            });
+          }
+        });
+
+        // Guides — symptom match (shown with matched symptom text)
+        guides.forEach((guide) => {
+          if (titleMatches.has(guide.slug)) return;
+          const matched = (guide.symptoms ?? []).find((s) => s.toLowerCase().includes(q));
+          if (matched) {
+            results.push({
+              id: `guide-${guide.slug}`,
+              title: guide.title,
+              category: guide.category,
+              matchedSymptom: matched,
+              action: () => navigate(`/elsewhere/workshop/guides/${guide.slug}`),
+            });
+          }
+        });
+
+        return results;
+      })()
+    : [...navCommands, ...guides.slice(0, 5).map((g) => ({
+        id: `guide-${g.slug}`,
+        title: g.title,
+        category: g.category,
+        action: () => navigate(`/elsewhere/workshop/guides/${g.slug}`),
+      }))];
 
   // Reset selection when filtered results change
   useEffect(() => {
@@ -137,7 +163,7 @@ export default function CommandPalette({ guides }: { guides: Guide[] }) {
                 ref={inputRef}
                 type="text"
                 class="palette-input"
-                placeholder="Search guides, navigate..."
+                placeholder="Search guides, symptoms, fault codes…"
                 value={query}
                 onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
               />
@@ -167,9 +193,11 @@ export default function CommandPalette({ guides }: { guides: Guide[] }) {
                           >
                             <div class="palette-item-content">
                               <span class="palette-item-title">{cmd.title}</span>
-                              {category !== 'Navigation' && (
+                              {cmd.matchedSymptom ? (
+                                <span class="palette-item-symptom">"{cmd.matchedSymptom}"</span>
+                              ) : category !== 'Navigation' ? (
                                 <span class="palette-item-meta">{cmd.category}</span>
-                              )}
+                              ) : null}
                             </div>
                           </button>
                         );
@@ -312,6 +340,17 @@ export default function CommandPalette({ guides }: { guides: Guide[] }) {
           text-transform: uppercase;
           letter-spacing: 0.05em;
           flex-shrink: 0;
+        }
+
+        .palette-item-symptom {
+          font-size: 11px;
+          color: var(--fg-muted);
+          font-style: italic;
+          flex-shrink: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 260px;
         }
 
         .palette-empty {

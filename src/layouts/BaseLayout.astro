@@ -1,10 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { join, dirname } from 'node:path';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CommandPalette from '../components/CommandPalette.tsx';
 import { site, path, type Section } from '../lib/site';
+
+function extractSymptoms(slug: string): string[] {
+  try {
+    const dir = dirname(fileURLToPath(import.meta.url));
+    const filePath = join(dir, '..', 'content', 'guides', `${slug}.mdx`);
+    const raw = readFileSync(filePath, 'utf-8');
+    const match = raw.match(/^## Symptoms\s*\n([\s\S]*?)(?=\n## |\n---|\s*$)/m);
+    if (!match) return [];
+    return match[1]
+      .split('\n')
+      .filter((l) => l.trim().startsWith('- '))
+      .map((l) => l.replace(/^- /, '').trim());
+  } catch {
+    return [];
+  }
+}
 
 // Fetch all guides for command palette
 const guides = await getCollection('guides');
@@ -12,6 +31,7 @@ const guideList = guides.map((g) => ({
   slug: g.data.slug,
   title: g.data.title,
   category: g.data.category || 'other',
+  symptoms: extractSymptoms(g.data.slug),
 }));
 
 interface Props {

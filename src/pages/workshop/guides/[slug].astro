@@ -6,9 +6,7 @@ import PartsModule from '../../../components/PartsModule.astro';
 import WhereToBuy from '../../../components/WhereToBuy.astro';
 import CompatBadge from '../../../components/CompatBadge.astro';
 import {
-  extractHeadings,
   generateHowToSchema,
-  getRelatedGuides,
   getDifficultyLabel,
   getSkillLevel,
   estimateTime,
@@ -30,10 +28,13 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { slug, title, category, gens = [], engines = [], difficulty, time_minutes, cost_min_eur, cost_max_eur, parts = [], related = [] } = entry.data;
 
-// In Astro 6 with glob loader, the entry is imported as a module
-// The default export is the Astro component
 const module = await import(`../../../content/guides/${slug}.mdx`);
 const Content = module.default;
+
+// Astro MDX integration exports getHeadings() from each .mdx file
+const rawHeadings: Array<{ depth: number; slug: string; text: string }> =
+  typeof module.getHeadings === 'function' ? module.getHeadings() : [];
+const headings = rawHeadings.map((h) => ({ level: h.depth, text: h.text, slug: h.slug }));
 
 // Generate schema for JSON-LD
 const guideUrl = path(`/workshop/guides/${slug}`);
@@ -72,12 +73,13 @@ const breadcrumbSchema = {
   ],
 };
 
-// Get related guides (TODO: fetch actual titles)
-const relatedGuides = await getRelatedGuides(related);
-
-// For heading extraction, we'll do it on the client side or extract from markdown
-// For now, we'll parse headings from the MDX string during build
-let headings: any[] = [];
+// Resolve real titles from the collection for related guides
+const allGuides = await getCollection('guides');
+const guideTitleMap = new Map(allGuides.map((g) => [g.data.slug, g.data.title]));
+const relatedGuides = (related as string[]).map((slug) => ({
+  slug,
+  title: guideTitleMap.get(slug) ?? slug.replace(/-/g, ' '),
+}));
 ---
 
 <BaseLayout title={title} description={`${title} for Mitsubishi Pajero`} section="workshop">

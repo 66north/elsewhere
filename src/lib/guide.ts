@@ -143,17 +143,3 @@ export function generateHowToSchema(
     ],
   };
 }
-
-/** Get related guides with titles. */
-export async function getRelatedGuides(
-  related?: string[]
-): Promise<Array<{ slug: string; title: string }>> {
-  if (!related || related.length === 0) return [];
-
-  // In a real app, this would fetch full guide metadata
-  // For now, return placeholders that will be filled at runtime
-  return related.map((slug) => ({
-    slug,
-    title: slug.replace(/-/g, ' '), // Placeholder
-  }));
-}

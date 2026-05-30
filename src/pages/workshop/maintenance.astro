@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MaintenanceTracker from '../../components/MaintenanceTracker.tsx';
+import { path } from '../../lib/site';
+---
+
+<BaseLayout
+  title="Maintenance Tracker"
+  description="Enter your mileage to see what service items are due on your Mitsubishi Pajero."
+  section="workshop"
+>
+  <div class="tracker-page">
+    <header class="tracker-header">
+      <div class="eyebrow">Workshop · Maintenance</div>
+      <h1>What's due?</h1>
+      <p class="lede">
+        Enter your current odometer and the mileage at your last full service. The tracker tells you what's due now, what's coming up, and links you to the how-to guide for each item.
+      </p>
+      <p class="garage-note">
+        If you've set up <a href={path('/workshop')}>My Garage</a>, your engine is pre-selected. Mileage inputs are saved locally in your browser.
+      </p>
+    </header>
+
+    <MaintenanceTracker client:load />
+
+    <section class="full-schedule">
+      <h2 class="section-title">Full schedule</h2>
+      <p>Looking for the complete factory maintenance table?</p>
+      <a href={path('/workshop/guides/maintenance-schedule')} class="schedule-link">
+        Maintenance Schedule — Service Intervals →
+      </a>
+    </section>
+  </div>
+
+  <style>
+    .tracker-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-page) 80px;
+    }
+
+    .tracker-header {
+      padding: 72px 0 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .eyebrow {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+
+    .tracker-header h1 {
+      font-size: 40px;
+      margin: 0 0 20px;
+      color: var(--fg);
+    }
+
+    .lede {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      max-width: 60ch;
+      margin-bottom: 12px;
+    }
+
+    .garage-note {
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+
+    .garage-note a {
+      color: var(--accent);
+    }
+
+    .full-schedule {
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-soft);
+      margin-bottom: 8px;
+    }
+
+    .full-schedule p {
+      font-size: 15px;
+      color: var(--fg-muted);
+      margin-bottom: 12px;
+    }
+
+    .schedule-link {
+      display: inline-block;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--fg);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      background: var(--bg-elev);
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .schedule-link:hover {
+      background: var(--bg-sunken);
+      border-color: var(--border-strong);
+    }
+  </style>
+</BaseLayout>
